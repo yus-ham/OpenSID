@@ -14,7 +14,6 @@ class MY_Log extends CI_Log
 			$ajax = strtolower(@$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest' ? ' (AJAX)' : null;
 			$message = "\n================================================================================================\n";
 			$message .= sprintf("Request%s: %s %s\n", $ajax, $_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-			$message .= print_r($_REQUEST,8);
 			$message .= "\nSession: ". session_id() ."\n". print_r($_SESSION,8);
 			$this->write_log('debug', $message);
 		}

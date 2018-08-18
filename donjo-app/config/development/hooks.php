@@ -1,10 +1,6 @@
 <?php
 
-$hooks_php = __DIR__ .'/../production/hooks.php';
-
-if (is_file($hooks_php)) {
-	require $hooks_php;
-}
+is_file(__DIR__ .'/../production/hooks.php') && require __DIR__ .'/../production/hooks.php';
 
 $hook['pre_controller'][] = function()
 {
