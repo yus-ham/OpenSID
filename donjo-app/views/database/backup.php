@@ -31,8 +31,8 @@
 																	</ul>
 																</div>
 																<p>Backup yang dibuat dapat dipergunakan untuk me-restore database SID anda apabila ada masalah. Klik tombol Restore di bawah untuk menggantikan keseluruhan database SID dengan data hasil backup terdahulu.</p>
-																<form action="<?= $form_action?>" method="post" enctype="multipart/form-data" class="form-horizontal">
-																	<?php if (strlen(@$_SESSION["SIAK"])>1): ?>
+																<?=form_open($form_action, 'enctype="multipart/form-data" class="form-horizontal"')?>
+																	<?php if(strlen(@$_SESSION["SIAK"])>1): ?>
 																			<?=$_SESSION["SIAK"]?>
 																	<?php endif ?>
 																	<?php
