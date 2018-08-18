@@ -131,8 +131,9 @@
 					<th align="right">memory</th>
 				</tr>
 				<?php if (count($benchmarks)): ?>
+					<?php $total = 0 ?>
 					<?php foreach ((array)$benchmarks as $benchmark): ?>
-						<?php $total = isset($total) ? $total + $benchmark['diff'] : $benchmark['diff'] ?>
+						<?php $total += $benchmark['diff'] ?>
 						<tr class="<?php echo alternator('odd','even')?>">
 							<td align="left"><?php echo $benchmark['name'] ?></td>
 							<td align="right"><?php echo sprintf('%.2f', $benchmark['diff'] * 1000) ?> ms</td>
