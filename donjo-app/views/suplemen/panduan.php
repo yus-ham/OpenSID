@@ -8,7 +8,7 @@
 		</ol>
 	</section>
 	<section class="content" id="maincontent">
-		<form id="mainform" name="mainform" action="" method="post">
+		<?=form_open($form_action, 'id="mainform" name=mainform')?>
 			<div class="row">
 				<div class="col-md-3">
 					<?php $this->load->view('suplemen/menu_kiri.php')?>

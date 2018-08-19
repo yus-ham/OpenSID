@@ -20,7 +20,7 @@
 		</ol>
 	</section>
 	<section class="content" id="maincontent">
-		<form id="mainform" name="mainform" action="" method="post">
+		<?=form_open(null, 'id="mainform" name="mainform"')?>
 			<div class="row">
 				<div class="col-md-3">
 					<div id="bantuan" class="box box-info">
@@ -56,7 +56,7 @@
 							<div class="row">
 								<div class="col-sm-12">
 									<div class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-										<form id="mainform" name="mainform" action="" method="post">
+										<?=form_open(null, 'id="mainform" name="mainform"')?>
 											<div class="row">
 												<div class="col-sm-9">
 													<select class="form-control input-sm" name="filter" onchange="formAction('mainform', '<?=site_url('kelompok/filter')?>')">
@@ -128,7 +128,7 @@
 										<div class="row">
 											<div class="col-sm-6">
 												<div class="dataTables_length">
-													<form id="paging" action="<?= site_url("kelompok")?>" method="post" class="form-horizontal">
+													<?=form_open(site_url("kelompok"), 'id=paging class=form-horizontal')?>
 														<label>
 															Tampilkan
 															<select name="per_page" class="form-control input-sm" onchange="$('#paging').submit()">
@@ -213,4 +213,3 @@
 		</form>
 	</section>
 </div>
-

@@ -8,6 +8,7 @@
 		</ol>
 	</section>
 	<section class="content" id="maincontent">
+	<?=form_open_multipart($form_action, 'id="mainform" name=mainform')?>
     <form id="mainform" name="mainform" action="<?= $form_action?>" method="post" enctype="multipart/form-data">
       <div class="row">
         <div class="col-md-12">

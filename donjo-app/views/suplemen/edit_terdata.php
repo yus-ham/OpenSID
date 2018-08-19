@@ -1,4 +1,4 @@
-<form action="<?= $form_action?>" method="post" id="validasi" enctype="multipart/form-data">
+<?=form_open_multipart($form_action, 'id=validasi')?>
 	<div class='modal-body'>
 		<div class="row">
 			<div class="col-sm-12">

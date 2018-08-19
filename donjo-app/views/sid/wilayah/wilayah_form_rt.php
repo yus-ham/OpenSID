@@ -21,7 +21,7 @@
 					<div class="box-body">
 						<div class="row">
 							<div class="col-sm-12">
-							<form id="validasi" action="<?= $form_action?>" method="POST" enctype="multipart/form-data" class="form-horizontal">
+								<?=form_open_multipart($form_action, 'id="validasi" class=form-horizontal')?>
 									<div class="box-body">
 										<div class="row">
 											<div class="col-sm-12">
@@ -75,4 +75,3 @@
 		</div>
 	</section>
 </div>
-

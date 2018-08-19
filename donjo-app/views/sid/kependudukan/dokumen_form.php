@@ -1,3 +1,4 @@
+<?php $this->load->helper('form') ?>
 <script src="<?= base_url()?>assets/js/validasi.js"></script>
 <script>
 $('#file_browser').click(function(e)
@@ -16,7 +17,7 @@ $('#file_path').click(function()
     $('#file_browser').click();
 });
 </script>
-<form id="validasi" action="<?= $form_action?>" method="POST" enctype="multipart/form-data">
+<?=form_open_multipart($form_action, 'id=validasi')?>
 	<div class='modal-body'>
 		<div class="row">
 			<div class="col-sm-12">

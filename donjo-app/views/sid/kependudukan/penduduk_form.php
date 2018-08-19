@@ -8,7 +8,7 @@
 		</ol>
 	</section>
 	<section class="content" id="maincontent">
-		<form id="mainform" name="mainform" action="<?= $form_action?>" method="POST" enctype="multipart/form-data">
+		<?=form_open_multipart($form_action, 'id="mainform" name="mainform"')?>
 			<div class="row">
 				<?php $edit_lokasi = ((empty($penduduk) OR $_SESSION['validation_error']) AND empty($id)); ?>
 				<?php if ($edit_lokasi): ?>
@@ -61,4 +61,3 @@
 		</form>
 	</section>
 </div>
-

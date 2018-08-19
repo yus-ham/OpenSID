@@ -47,7 +47,7 @@
 									</table>
 								</div>
 								<div class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-									<form id="mainform" name="mainform" action="" method="post">
+									<?=form_open(null, 'id="mainform" name=mainform')?>
 										<div class="row">
 											<div class="col-sm-12">
 												<div class="table-responsive">
@@ -147,4 +147,3 @@
 		</div>
 	</section>
 </div>
-

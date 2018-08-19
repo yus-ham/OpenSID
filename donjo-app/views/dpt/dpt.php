@@ -27,7 +27,7 @@
 	<section class="content" id="maincontent">
 		<div class="row">
 			<div class="col-md-12">
-				<form id="mainform" name="mainform" action="" method="post">
+				<?=form_open($form_action, 'id="mainform" name=mainform')?>
 					<input type="hidden" name="rt" value="">
 					<div class="box box-info">
 						<div class="box-header with-border">
@@ -170,7 +170,7 @@
 										<div class="row">
 											<div class="col-sm-6">
 												<div class="dataTables_length">
-													<form id="paging" action="<?= site_url("dpt")?>" method="post" class="form-horizontal">
+													<?=form_open(site_url('dpt'), 'id=paging class=form-horizontal')?>
 														<label>
 															Tampilkan
 															<select name="per_page" class="form-control input-sm" onchange="$('#paging').submit()">
@@ -254,4 +254,3 @@
 		</div>
 	</section>
 </div>
-

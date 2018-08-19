@@ -1,7 +1,8 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowed');
 class Keluarga extends CI_Controller{
 
-function __construct(){
+public function __construct()
+{
 		parent::__construct();
 		session_start();
 		$this->load->model('user_model');
@@ -19,6 +20,11 @@ function __construct(){
 		$this->load->model('program_bantuan_model');
 		$this->load->model('referensi_model');
 		$this->modul_ini = 2;
+
+		if ($this->input->is_ajax_request())
+		{
+			$this->load->helper('form');
+		}
 	}
 
 	function clear(){
