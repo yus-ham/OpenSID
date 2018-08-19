@@ -213,6 +213,9 @@ public function __construct()
 				} else {
 					$data['penduduk'] = $_POST;
 				}
+				// Di penduduk_isian_form memakai 'sex' sesuai dengan nama kolom
+				// tapi pengisian nilai sebelumnya menggunakan 'id_sex'
+				$data['penduduk']['id_sex'] = $data['penduduk']['sex'];
 			} else
 				$data['penduduk'] = null;
 			$data['kk']          = null;
