@@ -79,7 +79,14 @@
 																	</td>
 																	<td><?= $data['no_surat']?></td>
 																	<td><?= $data['format']?></td>
-																	<td><?= unpenetration($data['nama'])?></td>
+																	<td>
+																		<?php if ($data['nama']): ?>
+																			<?= unpenetration($data['nama']); ?>
+																		<?php elseif ($data['nama_non_warga']): ?>
+																			<strong>Non-warga: </strong><?= $data['nama_non_warga']; ?><br>
+																			<strong>NIK: </strong><?= $data['nik_non_warga']; ?>
+																		<?php endif; ?>
+																	</td>
 																	<td><?= $data['pamong']?></td>
 																	<td nowrap><?= tgl_indo2($data['tanggal'])?></td>
 																	<td><?= $data['nama_user']?></td>
@@ -139,7 +146,7 @@
 								<div class='modal-content'>
 									<div class='modal-header'>
 										<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-										<h4 class='modal-title' id='myModalLabel'><i class='fa fa-text-width text-yellow'></i> Konfirmasi</h4>
+										<h4 class='modal-title' id='myModalLabel'><i class='fa fa-exclamation-triangle text-red'></i> Konfirmasi</h4>
 									</div>
 									<div class='modal-body btn-info'>
 										Apakah Anda yakin ingin menghapus data ini?

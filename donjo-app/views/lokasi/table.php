@@ -95,7 +95,7 @@
 																			<a href="<?=site_url("plan/ajax_lokasi_maps/$p/$o/$data[id]")?>" class="btn bg-olive btn-flat btn-sm" data-remote="false" data-toggle="modal" data-target="#mapBox" data-title="Lokasi <?= $data['nama']?>" title="Lokasi <?= $data['nama']?>"><i class="fa fa-map"></i></a>
 																			<a href="#" data-href="<?= site_url("plan/delete/$p/$o/$data[id]")?>" class="btn bg-maroon btn-flat btn-sm"  title="Hapus" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
 																	  </td>
-																		<td width="60%"><?= $data['nama']?></td>
+																		<td width="30%"><?= $data['nama']?></td>
 																		<td><?= $data['aktif']?></td>
 																		<td nowrap><?= $data['kategori']?></td>
 																		<td><?= $data['jenis']?></td>
@@ -155,7 +155,7 @@
 									<div class='modal-content'>
 										<div class='modal-header'>
 											<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-											<h4 class='modal-title' id='myModalLabel'><i class='fa fa-text-width text-yellow'></i> Konfirmasi</h4>
+											<h4 class='modal-title' id='myModalLabel'><i class='fa fa-exclamation-triangle text-red'></i> Konfirmasi</h4>
 										</div>
 										<div class='modal-body btn-info'>
 											Apakah Anda yakin ingin menghapus data ini?

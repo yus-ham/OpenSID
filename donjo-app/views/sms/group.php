@@ -64,15 +64,15 @@
 															<tbody>
 																<?php foreach ($main as $data): ?>
 																	<tr>
-																		<td><input type="checkbox" name="id_cb[]" value="<?=$data['nama_grup']?>" /></td>
+																		<td><input type="checkbox" name="id_cb[]" value="<?=$data['id_grup']?>" /></td>
 																		<td><?=$data['no']?></td>
 																		<td nowrap>
-																			<a href="<?= site_url("sms/form_grup/$data[nama_grup]")?>" class="btn bg-orange btn-flat btn-sm" data-remote="false" data-toggle="modal" data-target="#modalBox" data-title="Ubah Data" title="Ubah Data"><i class="fa fa-edit"></i></a>
-																			<a href="#" data-href="<?= site_url("sms/grup_delete/$data[nama_grup]")?>" class="btn bg-maroon btn-flat btn-sm"  title="Hapus" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
-																			<a href="<?= site_url("sms/anggota/$data[nama_grup]")?>" class="btn bg-purple btn-flat btn-sm" title="Rincian Anggota"><i class="fa fa-list"></i></a>
+																			<a href="<?=site_url("sms/form_grup/$data[id_grup]")?>" class="btn bg-orange btn-flat btn-sm" data-remote="false" data-toggle="modal" data-target="#modalBox" data-title="Ubah Data" title="Ubah Data"><i class="fa fa-edit"></i></a>
+																			<a href="#" data-href="<?=site_url("sms/grup_delete/$data[id_grup]")?>" class="btn bg-maroon btn-flat btn-sm"  title="Hapus" data-toggle="modal" data-target="#confirm-delete"><i class="fa fa-trash-o"></i></a>
+																			<a href="<?=site_url("sms/anggota/$data[id_grup]")?>" class="btn bg-purple btn-flat btn-sm" title="Rincian Anggota"><i class="fa fa-list"></i></a>
 																		</td>
                                     <td><?=$data['nama_grup']?></td>
-				 														<td><?=$data['jumlah_kontak']?></td>
+				 														<td><?=$data['jumlah_anggota']?></td>
 																	</tr>
 																<?php endforeach; ?>
 															</tbody>
@@ -129,7 +129,7 @@
 									<div class='modal-content'>
 										<div class='modal-header'>
 											<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-											<h4 class='modal-title' id='myModalLabel'><i class='fa fa-text-width text-yellow'></i> Konfirmasi</h4>
+											<h4 class='modal-title' id='myModalLabel'><i class='fa fa-exclamation-triangle text-red'></i> Konfirmasi</h4>
 										</div>
 										<div class='modal-body btn-info'>
 											Apakah Anda yakin ingin menghapus data ini?

@@ -39,14 +39,14 @@
 													</select>
 													<select class="form-control input-sm" name="line" onchange="formAction('mainform', '<?= site_url('garis/line')?>')">
 														<option value="">Kategori</option>
-														<?php foreach ($list_line AS $data): ?>
-															<option value="<?= $data['id']?>" <?php if ($line == $data['id']): ?>selected<?php endif ?>><?= $data['nama']?></option>
+														<?php foreach ($list_subline AS $data): ?>
+															<option value="<?= $data['id']?>" <?php if ($subline == $data['id']): ?>selected<?php endif ?>><?= $data['nama']?></option>
 														<?php endforeach;?>
 													</select>
 													<select class="form-control input-sm" name="subline" onchange="formAction('mainform', '<?= site_url('garis/subline')?>')">
 														<option value="">Jenis</option>
-														<?php foreach ($list_subline AS $data): ?>
-															<option value="<?= $data['id']?>" <?php if ($subline == $data['id']): ?>selected<?php endif ?>><?= $data['nama']?></option>
+														<?php foreach ($list_line AS $data): ?>
+															<option value="<?= $data['id']?>" <?php if ($line == $data['id']): ?>selected<?php endif ?>><?= $data['nama']?></option>
 														<?php endforeach;?>
 													</select>
 												</div>
@@ -163,7 +163,7 @@
 									<div class='modal-content'>
 										<div class='modal-header'>
 											<button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-											<h4 class='modal-title' id='myModalLabel'><i class='fa fa-text-width text-yellow'></i> Konfirmasi</h4>
+											<h4 class='modal-title' id='myModalLabel'><i class='fa fa-exclamation-triangle text-red'></i> Konfirmasi</h4>
 										</div>
 										<div class='modal-body btn-info'>
 											Apakah Anda yakin ingin menghapus data ini?
