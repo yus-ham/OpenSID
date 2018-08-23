@@ -82,7 +82,7 @@
 										<?php endif; ?>
 									</form>
 									<div id="form-melengkapi-data-peserta">
-										<?=form_open_multipart_multipart("$form_action/$suplemen[id]", 'id=validasi class=form-horizontal')?>
+										<?=form_open_multipart("$form_action/$suplemen[id]", 'id=validasi class=form-horizontal')?>
 											<div class="form-group">
 												<label  class="col-sm-3 control-label"></label>
 												<div class="col-sm-8">
