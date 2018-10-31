@@ -1,5 +1,3 @@
-<!-- jQuery 3 -->
-<script src="<?= base_url()?>assets/bootstrap/js/jquery.min.js"></script>
 <script>
 	$(function()
 	{
@@ -45,10 +43,10 @@
 							<a class="btn btn-social btn-flat btn-info btn-sm" data-toggle="dropdown"><i class='fa fa-arrow-circle-down'></i> Aksi Data Terpilih</a>
 							<ul class="dropdown-menu" role="menu">
 								<li>
-									<a href="#confirm-status" class="btn btn-social btn-flat btn-block btn-sm" title="Cetak Kartu Keluarga" onclick="aksiBorongan('mainform','<?= site_url("keluarga/cetak_kk_all")?>')"><i class="fa fa-print"></i> Cetak Kartu Keluarga</a>
+									<a href="" class="btn btn-social btn-flat btn-block btn-sm" title="Cetak Kartu Keluarga" onclick="formAction('mainform','<?= site_url("keluarga/cetak_kk_all")?>', '_blank'); return false;"><i class="fa fa-print"></i> Cetak Kartu Keluarga</a>
 								</li>
 								<li>
-									<a href="#confirm-status" class="btn btn-social btn-flat btn-block btn-sm" title="Unduh Kartu Keluarga" onclick="aksiBorongan('mainform','<?= site_url("keluarga/doc_kk_all")?>')"><i class="fa fa-download"></i> Unduh Kartu Keluarga</a>
+									<a href="" class="btn btn-social btn-flat btn-block btn-sm" title="Unduh Kartu Keluarga" onclick="formAction('mainform','<?= site_url("keluarga/doc_kk_all")?>'); return false;"><i class="fa fa-download"></i> Unduh Kartu Keluarga</a>
 								</li>
 								<?php if ($grup==1): ?>
 									<li>
@@ -69,6 +67,7 @@
 													<option value="">Semua KK</option>
 													<option value="1" <?php if ($status_dasar == 1): ?>selected<?php endif ?>>KK Aktif</option>
 													<option value="2" <?php if ($status_dasar == 2): ?>selected<?php endif ?>>KK Hilang/Pindah/Mati</option>
+													<option value="3" <?php if ($status_dasar == 3): ?>selected<?php endif ?>>KK Kosong</option>
 												</select>
 												<select class="form-control input-sm" name="sex" onchange="formAction('mainform', '<?=site_url('keluarga/sex')?>')">
 													<option value="">Jenis Kelamin</option>
@@ -110,6 +109,9 @@
 										<div class="row">
 											<div class="col-sm-12">
 												<div class="table-responsive">
+													<?php if ($judul_statistik): ?>
+														<h5 class="box-title text-center"><b><?= $judul_statistik; ?></b></h5>
+													<?php endif; ?>
 													<table class="table table-bordered table-striped dataTable table-hover nowrap">
 														<thead class="bg-gray disabled color-palette">
 															<tr>

@@ -1,5 +1,3 @@
-<!-- jQuery 3 -->
-<script src="<?= base_url()?>assets/bootstrap/js/jquery.min.js"></script>
 <script>
 	$(function()
 	{
@@ -59,9 +57,9 @@
 																<th>RW</th>
 																<th>RT</th>
 																<th>KK</th>
-																<th>Jiwa</th>
-																<th>LK</th>
-																<th>PR</th>
+																<th>L+P</th>
+																<th>L</th>
+																<th>P</th>
 
 															</tr>
 														</thead>

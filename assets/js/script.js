@@ -1,3 +1,14 @@
+$( window ).on( "load", function() {
+	// Scroll ke menu aktif perlu dilakukan di onload sesudah semua loading halaman selesai
+	// Tidak bisa di document.ready
+	// preparing var for scroll via query selector
+	var activated_menu = $('li.treeview.active.menu-open')[0];
+	// autscroll to activated menu/sub menu
+	if (activated_menu){
+		activated_menu.scrollIntoView({behavior: 'smooth'});
+	}
+});
+
 $(document).ready(function()
 {
 	//CheckBox All Selected
@@ -36,6 +47,16 @@ $(document).ready(function()
 
 	// Select2 dengan fitur pencarian
 	$('.select2').select2();
+	// Select2 dengan fitur pencarian dan boleh isi sendiri
+	$('.select2-tags').select2(
+		{
+			tags: true
+		});
+	// Select2 untuk disposisi pada form
+	// surat masuk
+	$('#disposisi_kepada').select2({
+		placeholder: "Pilih tujuan disposisi"
+	});
 	$('button[type="reset"]').click(function()
 	{
 		$('.select2').select2('val', 'All');
@@ -253,7 +274,20 @@ $('[checked="checked"]').parent().addClass('active')
   $('.my-colorpicker2').colorpicker();
 	//Text Editor with addon
 	$('#min-textarea').wysihtml5();
+
+	$('ul.sidebar-menu').on('expanded.tree', function(e){
+		// Manipulasi menu perlu ada tenggang waktu -- supaya dilakukan sesudah
+		// event lain selesai
+		e.stopImmediatePropagation();
+		setTimeout(scrollTampil($('li.treeview.menu-open')[0]), 500);
+	});
+
 });
+
+function scrollTampil(elem)
+{
+	elem.scrollIntoView({behavior: 'smooth'});
+}
 
 function checkAll(id = "#checkall")
 {
@@ -318,8 +352,12 @@ function mapBox()
 		$(this).find('.fetched-data').load(link.attr('href'));
 	});
 }
-function formAction(idForm, action)
+function formAction(idForm, action, target = '')
 {
+	if (target != '')
+	{
+		$('#'+idForm).attr('target', target);
+	}
 	$('#'+idForm).attr('action', action);
 	$('#'+idForm).submit();
 }
@@ -353,6 +391,28 @@ function cari_nik()
 		$('#'+'main').submit();
 	});
 }
+
+$(function(){
+	$('#op_item input:checked').parent().css({'background':'#c9cdff','border':'0.5px solid #7a82eb'});
+	$('#op_item input').change(function()
+	{
+		if ($(this).is('input:checked'))
+		{
+			$('#op_item input').parent().css({'background':'#fafafa'});
+			$('#op_item input:checked').parent().css({'background':'#c9cdff','border':'0.5px solid #7a82eb'});
+			$(this).parent().css({'background':'#c9cdff'});
+		}
+		else
+		{
+			$(this).parent().css({'background':'#fafafa','border':'0px'});
+		}
+	});
+	$('#op_item label').click(function()
+	{
+		$(this).prev().trigger('click');
+	})
+});
+
 
 ;(function()
 {

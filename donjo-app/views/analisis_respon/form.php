@@ -1,5 +1,4 @@
 
-<script src="<?= base_url()?>assets/bootstrap/js/jquery.min.js"></script>
 <script>
 	$(document).ready(function()
 	{
@@ -19,102 +18,8 @@
 		// $('#op_item div').css('float','left');
 		$('#op_item div').css('width',op_item_width);
 		$('#op_item label').css('width',label_width);
-		$('#op_item input:checked').parent().css({'background':'#c9cdff','border':'1px solid #7a82eb'});
-		$('#op_item input').change(function()
-		{
-			if ($(this).is('input:checked'))
-			{
-				$('#op_item input').parent().css({'background':'#ffffff','border':'1px solid #ddd'});
-				$('#op_item input:checked').parent().css({'background':'#c9cdff','border':'1px solid #7a82eb'});
-				$(this).parent().css({'background':'#c9cdff','border':'1px solid #7a82eb'});
-			}
-			else
-			{
-				$(this).parent().css({'background':'#fafafa','border':'1px solid #ddd'});
-			}
-		});
-		$('#op_item label').click(function()
-		{
-			$(this).prev().trigger('click');
-		})
 	});
 </script>
-<style>
-	.form-horizontal .checkbox,
-	.form-horizontal .checkbox-inline,
-	.form-horizontal .radio,
-	.form-horizontal .radio-inline
-	{
-			padding: 4px;
-	}
-	.panel-fullscreen
-	{
-		display: block;	z-index: 999999; position: fixed;	width: 100%;
-		height: 100%;	top: 0;	right: 0;	left: 0;bottom: 0;overflow: auto;
-	}
-	#op_item div
-	{
-		margin:1px 0;
-		background:#fafafa;
-		border:1px solid #ddd;
-	}
-	#op_item input
-	{
-		vertical-align:middle;
-		margin:0px 2px;
-	}
-	#op_item label
-	{
-		padding:4px 10px 0px 2px;
-		font-size:11px;
-		line-height:14px;
-		font-weight:normal;
-	}
-	table.head
-	{
-		font-size:14px;
-		font-weight:bold;
-	}
-	.atas {vertical-align: top;}
-	.checkbox input[type="checkbox"],
-	.checkbox-inline input[type="checkbox"],
-	.radio input[type="radio"],
-	.radio-inline input[type="radio"]
-	{
-    position: inherit;
-	}
-	#op_item div
-	{
-		margin:1px 0;
-		background:#fafafa;
-		border:1px solid #ddd;
-	}
-	#op_item input
-	{
-		vertical-align:middle;
-		margin:0px 2px;
-	}
-	#op_item label
-	{
-		padding:4px 10px 0px 2px;
-		font-size:11px;
-		line-height:14px;
-		font-weight:normal;
-	}
-	table.head
-	{
-		font-size:14px;
-		font-weight:bold;
-	}
-	.atas {vertical-align: top;}
-	.form-inline .form-control
-	{
-    width: 100%;
-	}
-	.form-horizontal .control-label {
-    text-align: left;
-	}
-</style>
 
 <div class="content-wrapper">
 	<section class="content-header">
@@ -245,7 +150,7 @@
 																		<?php foreach ($data['parameter_respon'] AS $data2): ?>
 																			<div class="checkbox">
 																				<label>
-																					<input name="cb[<?= $data2['id_parameter']?>_<?= $data['id']?>]" value="<?= $data['id']?>.<?= $data2['id_parameter']?>" <?php if ($data2['cek']): ?> checked<?php endif; ?> type="checkbox">
+																					<input name="cb[<?= $data2['id_parameter']?>_<?= $data['id']?>]" value="<?= $data['id']?>.<?= $data2['id_parameter']?>" type="checkbox" <?php selected($data2['cek'], true, 1) ?>>
 																					<?= $data2['kode_jawaban']?>. <?= $data2['jawaban']?>
 																				</label>
 																			</div>
@@ -285,6 +190,15 @@
 												</table>
 											</div>
 											<div class="col-sm-12">
+												<?php if (!empty($list_bukti)): ?>
+													<div class="form-group">
+														<label class="col-sm-2 no-padding">Berkas Form Pendaftaran</label>
+														<div class="col-sm-2">
+															<input type="hidden" name="old_file" value="<?= $list_bukti[0]['pengesahan']?>">
+															<img class="attachment-img img-responsive" src="<?= base_url().LOKASI_PENGESAHAN.$list_bukti[0]['pengesahan']?>" alt="Bukti Pengesahan">
+														</div>
+													</div>
+												<?php endif; ?>
 												<div class="form-group">
 													<label class="control-label" for="upload">Unggah Berkas Form Pendataan</label>
 													<div class="input-group input-group-sm">
@@ -294,6 +208,9 @@
 															<button type="button" class="btn btn-info btn-flat"  id="file_browser"><i class="fa fa-search"></i> Browse</button>
 														</span>
 													</div>
+													<?php if (!empty($list_bukti)): ?>
+														<p class="help-block"><code>(Kosongkan jika tidak ingin mengubah berkas)</code></p>
+													<?php endif; ?>
 													<p><label class="control-label">*) Format file harus *.jpg</label></p>
 													<p><label class="control-label">*) Berkas form pendataan digunakan sebagai penguat / bukti pendataan maupun untuk verifikasi data yang sudah terinput.</label></p>
 													<p><label class="control-label">*) Berkas Bukti / pengesahan harus berupa file gambar dengan format .jpg, dengan ukuran maksimal 1 Mb (1 megabyte)</label></p>

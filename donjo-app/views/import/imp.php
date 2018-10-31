@@ -101,7 +101,7 @@
 												</div>
 												<div class="col-md-12">
 													<div class="box-header with-border">
-														<h3 class="box-title"><strong>Impor Pengelompokan Data Rumah Tanggal</strong></h3>
+														<h3 class="box-title"><strong>Impor Pengelompokan Data Rumah Tangga</strong></h3>
 													</div>
 													<div class="box-body">
 														<?=form_open($form_action3, 'id=kelompok enctype="multipart/form-data" class="form-horizontal"')?>

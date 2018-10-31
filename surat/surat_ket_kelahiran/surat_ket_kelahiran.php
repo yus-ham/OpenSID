@@ -1,5 +1,3 @@
-<!-- jQuery 3 -->
-<script src="<?= base_url()?>assets/bootstrap/js/jquery.min.js"></script>
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');?>
 <script language="javascript" type="text/javascript">
 	function ubah_saksi1(asal)
@@ -177,9 +175,10 @@
 						</a>
 					</div>
 					<div class="box-body">
-						<form id="validasi" action="<?= $form_action?>" method="POST" target="_blank" class="form-horizontal">
+						<form id="validasi" action="<?= $form_action?>" method="POST" target="_blank" class="form-surat form-horizontal">
+							<input type="hidden" id="url_surat" name="url_surat" value="<?= $url ?>">
+							<input type="hidden" id="url_remote" name="url_remote" value="<?= site_url('surat/nomor_surat_duplikat')?>">
 							<div class="col-md-12">
-								<input id="nomor" name="nomor" type="hidden" value="<?= $_SESSION['post']['nomor']; ?>"/>
 								<input name="anchor" type="hidden" value="<?= $anchor; ?>"/>
 								<?php if ($individu): ?>
 									<?php include("donjo-app/views/surat/form/konfirmasi_pemohon.php"); ?>
@@ -187,8 +186,8 @@
 								<div class="form-group">
 									<label for="nomor"  class="col-sm-3 control-label">Nomor Surat</label>
 									<div class="col-sm-8">
-										<input  id="nomor" class="form-control input-sm required" type="text" placeholder="Nomor Surat" name="nomor" value="<?= $_SESSION['post']['nomor']; ?>" onchange="nomor_surat(this.value);">
-										<p class="help-block text-red small">Terakhir: <strong><?= $surat_terakhir['no_surat'];?></strong> (tgl: <?= $surat_terakhir['tanggal']?>)</p>
+										<input  id="nomor" class="form-control input-sm required" type="text" placeholder="Nomor Surat" name="nomor" value="<?= $_SESSION['post']['nomor']; ?>">
+										<p class="help-block text-red small"><?= $surat_terakhir['ket_nomor']?><strong><?= $surat_terakhir['no_surat'];?></strong> (tgl: <?= $surat_terakhir['tanggal']?>)</p>
 									</div>
 								</div>
 								<div class="form-group subtitle_head">
@@ -921,17 +920,7 @@
 							</div>
 						</form>
 					</div>
-					<div class="box-footer">
-						<div class="row">
-							<div class="col-xs-12">
-								<button type="button" class="btn btn-social btn-flat btn-danger btn-sm"><i class="fa fa-times"></i> Batal</button>
-								<button type="button" onclick="$('#'+'validasi').attr('action','<?= $form_action?>');$('#'+'validasi').submit();" class="btn btn-social btn-flat btn-info btn-sm pull-right"><i class="fa fa-print"></i> Cetak</button>
-								<?php if (SuratExport($url)): ?>
-									<button type="button" onclick="$('#'+'validasi').attr('action','<?= $form_action2?>');$('#'+'validasi').submit();" class="btn btn-social btn-flat btn-success btn-sm pull-right" style="margin-right: 5px;"><i class="fa fa-file-text"></i> Ekspor Dok</button>
-								<?php endif; ?>
-							</div>
-						</div>
-					</div>
+					<?php include("donjo-app/views/surat/form/tombol_cetak.php"); ?>
 				</div>
 				<div class='modal fade' id='infoBox' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true'>
 					<div class='modal-dialog'>

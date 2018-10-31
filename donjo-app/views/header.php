@@ -54,6 +54,8 @@
 		<script src="<?= base_url()?>assets/js/leaflet.js"></script>
     <script src="<?= base_url()?>assets/js/turf.min.js"></script>
 		<script src="<?= base_url()?>assets/js/leaflet.pm.min.js"></script>
+		<!-- Diperlukan untuk script jquery khusus halaman -->
+		<script src="<?= base_url() ?>assets/bootstrap/js/jquery.min.js"></script>
 	</head>
 	<body class="skin-purple sidebar-mini fixed <?php if ($minsidebar==1): ?>sidebar-collapse<?php endif ?>">
 		<div class="wrapper">
@@ -90,11 +92,11 @@
 									<li class="user-footer">
 										<div class="pull-left">
 											<a href="<?=site_url()?>user_setting/" data-remote="false" data-toggle="modal" data-tittle="Pengaturan Pengguna" data-target="#modalBox">
-												<button  data-toggle="modal"  class="btn bg-maroon btn-flat btn-sm" >Profile</button>
+												<button  data-toggle="modal"  class="btn bg-maroon btn-flat btn-sm" >Profil</button>
 											</a>
 										</div>
 										<div class="pull-right">
-											<a href="<?=site_url()?>siteman" class="btn bg-maroon btn-flat btn-sm">Logout</a>
+											<a href="<?=site_url()?>siteman" class="btn bg-maroon btn-flat btn-sm">Keluar</a>
 										</div>
 									</li>
 								</ul>

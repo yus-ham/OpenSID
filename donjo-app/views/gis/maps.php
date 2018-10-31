@@ -4,7 +4,7 @@
 	var infoWindow;
 	window.onload = function()
 	{
-    <?php if (!empty($desa['lat'] AND !empty($desa['lng']))): ?>
+    <?php if (!empty($desa['lat']) AND !empty($desa['lng'])): ?>
       var posisi = [<?=$desa['lat'].",".$desa['lng']?>];
       var zoom   = <?=$desa['zoom'] ?: 10?>;
     <?php elseif (!empty($desa['path'])): ?>
@@ -21,7 +21,7 @@
 
     //Menambahkan tile layer OSM ke peta
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',	{
-      maxZoom: 18,
+      maxZoom: 19,
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
       id: 'mapbox.streets'
     }).addTo(mymap); //Menambahkan tile layer ke variabel 'peta'

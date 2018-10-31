@@ -47,7 +47,6 @@
 																	<th>No</th>
 																	<th>Aksi</th>
 																	<th width="50%">Nama Modul</th>
-																	<th width="30%">URL</th>
 																	<th>Aktif</th>
 																</tr>
 															</thead>
@@ -63,7 +62,6 @@
 																			<?php endif; ?>
 																		</td>
 																		<td><?=$data['modul']?></td>
-																		<td><?=$data['url']?></td>
 																		<td><?php	if ($data['aktif']==1): ?>Aktif<?php else: ?>Tidak Aktif <?php endif; ?></td>
 																	</tr>
 																<?php endforeach; ?>

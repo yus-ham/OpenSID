@@ -77,8 +77,16 @@
 																				<tr>
 																					<td>
 																						<dl class="dl-horizontal">
-																							<dt>Total Data Berhasil :</dt>
-																							<dd><?= $_SESSION['sukses']?></dd>
+																							<dt>Total Keluarga Terimpor :</dt>
+																							<dd><?= $_SESSION['total_keluarga']?></dd>
+																						</dl>
+																					</td>
+																				</tr>
+																				<tr>
+																					<td>
+																						<dl class="dl-horizontal">
+																							<dt>Total Penduduk Terimpor :</dt>
+																							<dd><?= $_SESSION['total_penduduk']?></dd>
 																						</dl>
 																					</td>
 																				</tr>
@@ -97,7 +105,7 @@
 																<h4 class='modal-title' id='myModalLabel'>Proses Impor ......</h4>
 															</div>
 															<div class='modal-body'>
-																Harap tunggu sampai proses impor selesai. Prosses ini biasa memakan waktu antara 1 (satu) Menit hingga 45 Menit, tergantung kecepatan komputer dan juga jumlah data penduduk yang di masukkan..
+																Harap tunggu sampai proses impor selesai. Proses ini biasa memakan waktu antara 1 (satu) Menit hingga 45 Menit, tergantung kecepatan komputer dan juga jumlah data penduduk yang di masukkan..
 																<div class='text-center'>
 																	<img src='<?= base_url()?>assets/images/background/loading.gif'>
 																</div>
@@ -106,7 +114,8 @@
 													</div>
 												</div>
 											</div>
-											<?php unset($_SESSION['sukses']);?>
+											<?php unset($_SESSION['total_keluarga']);?>
+											<?php unset($_SESSION['total_penduduk']);?>
 											<?php unset($_SESSION['baris']);?>
 											<?php unset($_SESSION['gagal']);?>
 										</div>

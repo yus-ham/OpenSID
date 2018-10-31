@@ -41,9 +41,9 @@
 											<tr>
 												<td colspan="3">
 													<?php if ($penduduk['foto']): ?>
-														 <img class="profile-user-img img-responsive img-circle" src="<?= AmbilFoto($penduduk['foto'])?>" alt="Photo">
+														 <img class="profile-user-img img-responsive img-circle" src="<?= AmbilFoto($penduduk['foto'])?>" alt="Foto">
 													<?php else: ?>
-														<img class="profile-user-img img-responsive img-circle" src="<?= base_url()?>assets/files/user_pict/kuser.png" alt="Photo">
+														<img class="profile-user-img img-responsive img-circle" src="<?= base_url()?>assets/files/user_pict/kuser.png" alt="Foto">
   												<?php endif; ?>
 												</td>
 											</tr>
@@ -57,7 +57,7 @@
 												</tr>
 												<tr>
 													<td width="300">Nama</td><td width="1">:</td>
-													<td><?= strtoupper(unpenetration($penduduk['nama']))?></td>
+													<td><?= strtoupper($penduduk['nama'])?></td>
 												</tr>
 												<tr>
 													<td>Status Kepemilikan KTP</td><td >:</td>
@@ -161,13 +161,13 @@
 													<td>NIK Ayah</td><td >:</td><td><?= strtoupper($penduduk['ayah_nik'])?></td>
 												</tr>
 												<tr>
-													<td>Nama Ayah</td><td >:</td><td><?= strtoupper(unpenetration($penduduk['nama_ayah']))?></td>
+													<td>Nama Ayah</td><td >:</td><td><?= strtoupper($penduduk['nama_ayah'])?></td>
 												</tr>
 												<tr>
 													<td>NIK Ibu</td><td >:</td><td><?= strtoupper($penduduk['ibu_nik'])?></td>
 												</tr>
 												<tr>
-													<td>Nama Ibu</td><td >:</td><td><?= strtoupper(unpenetration($penduduk['nama_ibu']))?></td>
+													<td>Nama Ibu</td><td >:</td><td><?= strtoupper($penduduk['nama_ibu'])?></td>
 												</tr>
 												<tr>
 													<th colspan="3" class="subtitle_head"><strong>ALAMAT</strong></th>
@@ -179,7 +179,7 @@
 													<td>Alamat</td><td >:</td><td><?= strtoupper($penduduk['alamat'])?></td>
 												</tr>
 												<tr>
-													<td>Dusun</td><td >:</td><td><?= strtoupper(ununderscore(unpenetration($penduduk['dusun'])))?></td>
+													<td>Dusun</td><td >:</td><td><?= strtoupper(ununderscore($penduduk['dusun']))?></td>
 												</tr>
 												<tr>
 													<td>RT/ RW</td><td >:</td><td><?= strtoupper($penduduk['rt'])?> / <?= $penduduk['rw']?></td>
@@ -223,9 +223,11 @@
 												<tr>
 													<td>Akseptor KB</td><td >:</td><td><?= strtoupper($penduduk['cara_kb'])?></td>
 												</tr>
-												<tr>
-													<td>Status Kehamilan</td><td >:</td><td><?= empty($penduduk['hamil']) ? 'TIDAK HAMIL' : 'HAMIL'?></td>
-												</tr>
+												<?php if ($penduduk['id_sex'] == 2): ?>
+													<tr>
+														<td>Status Kehamilan</td><td >:</td><td><?= empty($penduduk['hamil']) ? 'TIDAK HAMIL' : 'HAMIL'?></td>
+													</tr>
+												<?php endif; ?>
 											</thead>
 										</table>
 									</div>
