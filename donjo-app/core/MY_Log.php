@@ -2,7 +2,7 @@
 
 class MY_Log extends CI_Log
 {
-	var $logs = array();
+	public $logs = array();
 
 	public function __construct()
 	{
