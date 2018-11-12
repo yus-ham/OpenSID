@@ -30,11 +30,6 @@
 																		<li> Backup yang dihasilkan sebaiknya disimpan di komputer terpisah dari server SID. </li>
 																	</ul>
 																</div>
-<<<<<<< HEAD
-																<p>Backup yang dibuat dapat dipergunakan untuk me-restore database SID anda apabila ada masalah. Klik tombol Restore di bawah untuk menggantikan keseluruhan database SID dengan data hasil backup terdahulu.</p>
-																<?=form_open($form_action, 'enctype="multipart/form-data" class="form-horizontal"')?>
-																	<?php if(strlen(@$_SESSION["SIAK"])>1): ?>
-=======
 																<p class="text-muted text-red well well-sm no-shadow" style="margin-top: 10px;">
 																	<small><strong><i class="fa fa-info-circle text-red"></i> Proses ini tidak melakukan backup folder desa. Folder desa berisi berkas desa dan perlu dibackup juga secara rutin.</strong></small>
 																</p>
@@ -52,7 +47,6 @@
 																<p>Backup yang dibuat dapat dipergunakan untuk mengembalikan database SID anda apabila ada masalah. Klik tombol Restore di bawah untuk menggantikan keseluruhan database SID dengan data hasil backup terdahulu.</p>
 																<form action="<?= $form_action?>" method="post" enctype="multipart/form-data" class="form-horizontal">
 																	<?php if (strlen(@$_SESSION["SIAK"])>1): ?>
->>>>>>> caec3475f4005f2e003b5cec29acd0e973ff5131
 																			<?=$_SESSION["SIAK"]?>
 																	<?php endif ?>
 																	<?php
