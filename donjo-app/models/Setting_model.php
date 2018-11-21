@@ -86,4 +86,32 @@ class Setting_model extends CI_Model {
 		$outp = $this->db->where('key','sumber_gambar_slider')->update('setting_aplikasi', array('value'=>$this->input->post('pilihan_sumber')));
 		if (!$outp) $_SESSION['success'] = -1;
 	}
+
+	public function load_options()
+	{
+		foreach ($this->list_setting as $i => $set)
+		{
+			if ($set->jenis == 'option')
+			{
+				$this->list_setting[$i]->options = $this->get_options($set->id);
+			}
+		}
+
+	}
+
+	private function get_options($id)
+	{
+		$result = array();
+		$rows = $this->db->select('id,value')
+					->where('id_setting', $id)
+					->get('setting_aplikasi_options')
+					->result();
+
+		foreach ($rows as $row)
+		{
+			$result[$row->id] = $row->value;
+		}
+
+		return $result;
+	}
 }
