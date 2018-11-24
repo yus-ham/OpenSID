@@ -197,6 +197,7 @@
 
 		$this->db->where('id', 42)->update('setting_modul', array('url'=>'modul/clear', 'aktif'=>'1'));
 
+		// tambah setting penomoran_surat
 		if ($this->setting->penomoran_surat == null)
 		{
 			$setting = $this->db->select('value')
