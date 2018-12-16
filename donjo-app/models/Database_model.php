@@ -18,8 +18,8 @@
 		'18.08' => array('migrate' => 'migrasi_1808_ke_1809', 'nextVersion' => '18.09'),
 		'18.09' => array('migrate' => 'migrasi_1809_ke_1810', 'nextVersion' => '18.10'),
 		'18.10' => array('migrate' => 'migrasi_1810_ke_1811', 'nextVersion' => '18.11'),
-		'18.11' => array('migrate' => 'migrasi_1811_ke_1812', 'nextVersion' => NULL),
-		'18.12' => array('migrate' => NULL, 'nextVersion' => NULL)
+		'18.11' => array('migrate' => 'migrasi_1811_ke_1812', 'nextVersion' => '18.12'),
+		'18.12' => array('migrate' => 'migrasi_1812_ke_1901', 'nextVersion' => NULL)
 	);
 
 	public function __construct()
@@ -164,20 +164,88 @@
 	$this->migrasi_1809_ke_1810();
 	$this->migrasi_1810_ke_1811();
 	$this->migrasi_1811_ke_1812();
+	$this->migrasi_1812_ke_1901();
+  }
+
+  private function migrasi_1812_ke_1901()
+  {
+  	// Urut tabel tweb_desa_pamong
+  	if (!$this->db->field_exists('urut', 'tweb_desa_pamong'))
+  	{
+			// Tambah kolom
+			$fields = array();
+			$fields['urut'] = array(
+					'type' => 'int',
+					'constraint' => 5
+			);
+			$this->dbforge->add_column('tweb_desa_pamong', $fields);
+  	}
+		$this->db->where('id', 18)->update('setting_modul', array('url'=>'pengurus/clear', 'aktif'=>'1'));
   }
 
   private function migrasi_1811_ke_1812()
   {
-		// Pada tweb_keluarga kosongkan nik_kepala kalau tdk ada penduduk dgn kk_level=1 dan id=nik_kepala untuk keluarga itu
-		$kk_kosong = $this->db->select('k.id')
-		  ->where('p.id is NULL')
-			->from('tweb_keluarga k')
-			->join('tweb_penduduk p', 'p.id = k.nik_kepala and p.kk_level = 1', 'left')
-			->get()->result_array();
-		foreach ($kk_kosong as $kk)
-		{
-			$this->db->where('id', $kk['id'])->update('tweb_keluarga', array('nik_kepala' => NULL));
-		}
+  	// Ubah struktur tabel tweb_desa_pamong
+  	if (!$this->db->field_exists('id_pend', 'tweb_desa_pamong'))
+  	{
+			// Tambah kolom
+			$fields = array();
+			$fields['id_pend'] = array(
+					'type' => 'int',
+					'constraint' => 11
+			);
+			$fields['pamong_tempatlahir'] = array(
+					'type' => 'varchar',
+					'constraint' => 100,
+					'default' => NULL
+			);
+			$fields['pamong_tanggallahir'] = array(
+					'type' => 'date',
+					'default' => NULL
+			);
+			$fields['pamong_sex'] = array(
+					'type' => 'tinyint',
+					'constraint' => 4,
+					'default' => NULL
+			);
+			$fields['pamong_pendidikan'] = array(
+					'type' => 'int',
+					'constraint' => 10,
+					'default' => NULL
+			);
+			$fields['pamong_agama'] = array(
+					'type' => 'int',
+					'constraint' => 10,
+					'default' => NULL
+			);
+			$fields['pamong_nosk'] = array(
+					'type' => 'varchar',
+					'constraint' => 20,
+					'default' => NULL
+			);
+			$fields['pamong_tglsk'] = array(
+					'type' => 'date',
+					'default' => NULL
+			);
+			$fields['pamong_masajab'] = array(
+					'type' => 'varchar',
+					'constraint' => 120,
+					'default' => NULL
+			);
+			$this->dbforge->add_column('tweb_desa_pamong', $fields);
+  	}
+
+  	// Pada tweb_keluarga kosongkan nik_kepala kalau tdk ada penduduk dgn kk_level=1 dan id=nik_kepala untuk keluarga itu
+  	$kk_kosong = $this->db->select('k.id')
+  	  ->where('p.id is NULL')
+  		->from('tweb_keluarga k')
+  		->join('tweb_penduduk p', 'p.id = k.nik_kepala and p.kk_level = 1', 'left')
+  		->get()->result_array();
+  	foreach ($kk_kosong as $kk)
+  	{
+  		$this->db->where('id', $kk['id'])->update('tweb_keluarga', array('nik_kepala' => NULL));
+  	}
+
 		// Tambah surat keterangan domisili
 		$data = array(
 			'nama'=>'Keterangan Domisili',
@@ -210,9 +278,11 @@
 					'key' => 'penomoran_surat',
 					'value' => $setting->value ?: 2,
 					'jenis' => 'option',
-					'keterangan' => 'Penomoran surat mulai dari satu (1) setiap setahun'
+					'keterangan' => 'Penomoran surat mulai dari satu (1) setiap tahun'
 				)
 			);
+			// Hapus setting nomor_terakhir_semua_surat
+			$this->db->where('key', 'nomor_terakhir_semua_surat')->delete('setting_aplikasi');
 		}
 
 		$tb_option = 'setting_aplikasi_options';
@@ -253,22 +323,9 @@
 			$this->db->insert_batch(
 				$tb_option,
 				array(
-					array('id'=>1, 'id_setting'=>$set->id, 'value'=>'Nomor berurutan untuk setiap surat yang sejenis'),
-					array('id'=>2, 'id_setting'=>$set->id, 'value'=>'Nomor berurutan untuk setiap surat dengan jenis layanan yang sama'),
-					array('id'=>3, 'id_setting'=>$set->id, 'value'=>'Nomor berurutan untuk setiap surat'),
-				)
-			);
-		}
-
-		// tambah setting masa berlaku surat
-		if ($this->setting->masa_berlaku_surat == null)
-		{
-			$this->db->insert(
-				'setting_aplikasi',
-				array(
-					'key' => 'masa_berlaku_surat',
-					'value' => '1 bulan',
-					'keterangan' => 'Masa berlaku surat. Isi dengan angka dan unit tanggal (hari/pekan/bulan/tahun)'
+					array('id'=>1, 'id_setting'=>$set->id, 'value'=>'Nomor berurutan untuk masing-masing surat masuk dan keluar; dan untuk semua surat layanan'),
+					array('id'=>2, 'id_setting'=>$set->id, 'value'=>'Nomor berurutan untuk masing-masing surat masuk dan keluar; dan untuk setiap surat layanan dengan jenis yang sama'),
+					array('id'=>3, 'id_setting'=>$set->id, 'value'=>'Nomor berurutan untuk keseluruhan surat layanan, masuk dan keluar'),
 				)
 			);
 		}

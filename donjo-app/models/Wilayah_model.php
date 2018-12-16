@@ -104,7 +104,7 @@
 
 	public function update($id='')
 	{
-		if (empty($_POST['id_kepala']))
+		if (empty($_POST['id_kepala']) || !is_numeric($_POST['id_kepala']))
 			UNSET($_POST['id_kepala']);
 
 		$data = $_POST;
@@ -177,13 +177,15 @@
 
 	public function update_rw($dusun='', $rw='')
 	{
-		if (empty($_POST['id_kepala']))
-			UNSET($_POST['id_kepala']);
+		if (empty($_POST['id_kepala']) || !is_numeric($_POST['id_kepala']))
+		  UNSET($_POST['id_kepala']);
 
 		$data = $_POST;
+
 		$temp = $this->wilayah_model->cluster_by_id($dusun);
 		$this->db->where('dusun', $temp['dusun']);
 		$this->db->where('rw', $rw);
+        $this->db->where('rt', 0);//rw pasti data rt 0
 		$outp = $this->db->update('tweb_wil_clusterdesa', $data);
 
 		if ($outp) $_SESSION['success'] = 1;
@@ -238,10 +240,12 @@
 
 	public function update_rt($id=0)
 	{
-		if (empty($_POST['id_kepala']))
+		//Untuk mengakali update Nama RT saja tidak dengan kepala, sehingga ambil kepala sebelumnya
+		if (empty($_POST['id_kepala']) || !is_numeric($_POST['id_kepala']))
 			UNSET($_POST['id_kepala']);
 
 		$data = $_POST;
+
 		$this->db->where('id', $id);
 		$outp = $this->db->update('tweb_wil_clusterdesa', $data);
 
@@ -251,7 +255,10 @@
 
 	public function update_dusun_map($dusun='')
 	{
-		$data = $_POST;
+  	if (empty($_POST['id_kepala']) || !is_numeric($_POST['id_kepala']))
+  		UNSET($_POST['id_kepala']);
+
+    $data = $_POST;
 		$this->db->where('id', $dusun);
 		$outp = $this->db->update('tweb_wil_clusterdesa', $data);
 
@@ -268,7 +275,10 @@
 
 	public function update_rw_map($dus=0, $id=0)
 	{
-		$data = $_POST;
+    if (empty($_POST['id_kepala']) || !is_numeric($_POST['id_kepala']))
+      UNSET($_POST['id_kepala']);
+
+    $data = $_POST;
 		$this->db->where('dusun', $dus);
 		$this->db->where('rw', $id);
 		$this->db->where('rt', '0');
@@ -280,7 +290,10 @@
 
 	public function update_rt_map($dus=0, $rw=0, $id=0)
 	{
-		$data = $_POST;
+    if (empty($_POST['id_kepala']) || !is_numeric($_POST['id_kepala']))
+      UNSET($_POST['id_kepala']);
+
+    $data = $_POST;
 		$this->db->where('dusun', $dus);
 		$this->db->where('rw', $rw);
 		$this->db->where('rt', $id);

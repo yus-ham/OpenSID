@@ -1,4 +1,4 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Setting_model extends CI_Model {
 
@@ -103,9 +103,9 @@ class Setting_model extends CI_Model {
 	{
 		$result = array();
 		$rows = $this->db->select('id,value')
-					->where('id_setting', $id)
-					->get('setting_aplikasi_options')
-					->result();
+		                 ->where('id_setting', $id)
+		                 ->get('setting_aplikasi_options')
+		                 ->result();
 
 		foreach ($rows as $row)
 		{
