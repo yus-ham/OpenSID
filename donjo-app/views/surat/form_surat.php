@@ -1,4 +1,22 @@
 <?php
+$units_map = array(
+	'hari' => 'days',
+	'pekan' => 'weeks',
+	'bulan' => 'months',
+	'tahun' => 'years',
+);
+$masa = explode(' ', $this->setting->masa_berlaku_surat);
+
+$masa = array(
+	'angka' => $masa[0],
+	'unit' => $units_map[ strtolower($masa[1]) ],
+	'str' => $this->setting->masa_berlaku_surat,
+);
+?>
+<script>
+var masa = <?= json_encode($masa) ?>
+</script>
+<?php
 /*
  * Kalau ada file form surat di folder desa, pakai file itu.
  * Urutan: (1) LOKASI_SURAT_DESA/<folder_surat_ini>

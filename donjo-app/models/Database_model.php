@@ -259,6 +259,19 @@
 				)
 			);
 		}
+
+		// tambah setting masa berlaku surat
+		if ($this->setting->masa_berlaku_surat == null)
+		{
+			$this->db->insert(
+				'setting_aplikasi',
+				array(
+					'key' => 'masa_berlaku_surat',
+					'value' => '1 bulan',
+					'keterangan' => 'Masa berlaku surat. Isi dengan angka dan unit tanggal (hari/pekan/bulan/tahun)'
+				)
+			);
+		}
 	}
 
   private function migrasi_1810_ke_1811()
