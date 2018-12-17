@@ -17,7 +17,7 @@ $hook['pre_controller'][] = function()
 		}
 };
 
-$hook['display_override...'] = array(function()
+$hook['display_override'] = array(function()
 {
 	$CI = CI_Controller::get_instance();
 	$path = FCPATH.'vendor/ci-debug';

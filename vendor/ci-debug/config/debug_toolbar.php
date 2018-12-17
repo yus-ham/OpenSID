@@ -8,7 +8,7 @@
  *   $config['enable_query_strings'] = TRUE;
  * - Set the SecretKey
  */
-$config['render'] = TRUE;
+$config['render'] = is_file(FCPATH.'desa/debug');
 
 /*
  * Secret Key
