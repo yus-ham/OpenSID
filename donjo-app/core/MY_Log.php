@@ -31,7 +31,7 @@ class MY_Log extends CI_Log
 		if (ENVIRONMENT === 'development')
 		{
 			//$memory	 = (!function_exists('memory_get_usage')) ? '0' : memory_get_usage();
-			$b = load_class('Benchmark');
+			$b = load_class('Benchmark', 'core');
 			$b->mark($msg);
 			$this->logs[] = array(date('Y-m-d H:i:s P'), $level, $msg);
 		}
