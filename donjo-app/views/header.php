@@ -11,6 +11,8 @@
 			?>
 		</title>
 		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<meta content="<?=$this->security->get_csrf_token_name()?>" name="csrf-param">
+		<meta content="<?=$this->security->get_csrf_hash()?>" name="csrf-token">
 		<?php if (is_file(LOKASI_LOGO_DESA . "favicon.ico")): ?>
 			<link rel="shortcut icon" href="<?= base_url()?><?= LOKASI_LOGO_DESA?>favicon.ico" />
 		<?php else: ?>

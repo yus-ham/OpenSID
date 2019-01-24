@@ -1,11 +1,11 @@
-
+<?php $this->load->helper('form') ?>
 <style>
 	.form-group
 	{
     margin-bottom: 10px;
 	}
 </style>
-<form method="post" action="<?= $form_action?>">
+<?=form_open($form_action, 'id=validasi')?>
 	<div class='modal-body'>
 		<div class="row">
 			<div class="col-sm-12">

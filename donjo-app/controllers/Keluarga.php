@@ -21,6 +21,11 @@ class Keluarga extends CI_Controller {
 		$this->load->model('program_bantuan_model');
 		$this->load->model('referensi_model');
 		$this->modul_ini = 2;
+
+		if ($this->input->is_ajax_request())
+		{
+			$this->load->helper('form');
+		}
 	}
 
 	public function clear()

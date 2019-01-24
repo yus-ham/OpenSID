@@ -22,7 +22,7 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="box box-info">
-					<form id="mainform" name="mainform" action="" method="post">
+					<?=form_open(null, 'id="mainform" name=mainform')?>
 						<div class="box-header with-border">
 							<div class="row">
 								<div class="col-sm-12">
@@ -184,7 +184,7 @@
 									<div class="row">
 										<div class="col-sm-6">
 											<div class="dataTables_length">
-												<form id="paging" action="<?= site_url("penduduk_log")?>" method="post" class="form-horizontal">
+												<?=form_open(site_url("penduduk_log"), 'id=paging name=mainform class="form-horizontal"')?>
 													<label>
 														Tampilkan
 														<select name="per_page" class="form-control input-sm" onchange="$('#paging').submit()">
@@ -249,4 +249,3 @@
 		</div>
 	</section>
 </div>
-

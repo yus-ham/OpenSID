@@ -1,0 +1,6 @@
+development/*
+production/*
+
+!.gitignore
+!development/constants.php
+!development/hooks.php

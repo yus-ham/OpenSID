@@ -8,7 +8,7 @@
 		</ol>
 	</section>
 	<section class="content" id="maincontent">
-		<form id="mainform" name="mainform" action="<?= $form_action?>" method="post" enctype="multipart/form-data">
+		<?=form_open_multipart($form_action, 'id="mainform" name=mainform')?>
 			<div class="row">
 				<?php if (empty($new)): ?>
 					<div class="col-md-12">
@@ -112,4 +112,3 @@
 		</form>
 	</section>
 </div>
-

@@ -1,3 +1,4 @@
+<?php $this->load->helper('form') ?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -39,6 +40,7 @@
 								<hr />
 							</div>
 							<div class="form-bottom">
+								<?=form_open(site_url('siteman/auth'), 'class=login-form')?>
 								<form class="login-form" action="<?=site_url('siteman/auth')?>" method="post" >
 									<?php if ($_SESSION['siteman_wait']==1): ?>
 										<div class="error login-footer-top">

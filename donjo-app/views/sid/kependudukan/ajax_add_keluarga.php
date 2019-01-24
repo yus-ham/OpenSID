@@ -6,7 +6,7 @@
 		$('.select2').select2()
 	})
 </script>
-<form action="<?= $form_action?>" method="post" id="validasi">
+<?=form_open($form_action, 'id=validasi')?>
 	<div class="modal-body">
 		<div class="row">
 			<div class="col-sm-12">

@@ -15,12 +15,12 @@
 					<div class="box-header with-border">
 						<a href="<?= site_url("sid_core/sub_rw/$id_dusun")?>" class="btn btn-social btn-flat btn-info btn-sm btn-sm visible-xs-block visible-sm-inline-block visible-md-inline-block visible-lg-inline-block"  title="Kembali Ke Daftar RW">
 							<i class="fa fa-arrow-circle-left "></i>Kembali ke Daftar RW
-           	</a>
+           				</a>
 					</div>
 					<div class="box-body">
 						<div class="row">
 							<div class="col-sm-12">
-								<form id="validasi" action="<?= $form_action?>" method="POST" enctype="multipart/form-data"  class="form-horizontal">
+								<?=form_open_multipart($form_action, 'id="validasi" class=form-horizontal')?>
 									<div class="box-body">
 										<div class="row">
 											<div class="col-sm-12">
@@ -74,4 +74,3 @@
 		</div>
 	</section>
 </div>
-

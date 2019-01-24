@@ -1,7 +1,7 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Rtm extends CI_Controller {
-
+class Rtm extends CI_Controller
+{
 	public function __construct()
 	{
 		parent::__construct();
@@ -20,6 +20,11 @@ class Rtm extends CI_Controller {
 		$this->load->model('rtm_model');
 		$this->load->model('penduduk_model');
 		$this->modul_ini = 2;
+
+		if ($this->input->is_ajax_request())
+		{
+			$this->load->helper('form');
+		}
 	}
 
 	public function clear()

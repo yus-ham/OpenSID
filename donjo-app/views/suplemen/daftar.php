@@ -11,7 +11,7 @@
 		</ol>
 	</section>
 	<section class="content" id="maincontent">
-		<form id="mainform" name="mainform" action="" method="post">
+		<?=form_open(null, 'id="mainform" name=mainform')?>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="box box-info">
@@ -23,7 +23,7 @@
 							<div class="row">
 								<div class="col-sm-12">
 									<div class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-										<form id="mainform" name="mainform" action="" method="post">
+										<?=form_open(null, 'id="mainform" name=mainform')?>
 											<div class="row">
 												<div class="col-sm-12">
 													<div class="table-responsive">
@@ -107,4 +107,3 @@
 		</form>
 	</section>
 </div>
-

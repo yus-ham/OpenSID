@@ -48,7 +48,7 @@
 									<h3 class="box-title">Tambahkan Warga Terdata</h3>
 								</div>
 								<div class="box-body">
-									<form action="" id="main" name="main" method="POST"  class="form-horizontal">
+									<?=form_open_multipart(null, 'id="main" name=main class=form-horizontal')?>
 										<?php if ($suplemen["sasaran"] == 1): ?>
 											<div class="form-group" >
 												<label class="col-sm-3 control-label required"  for="nik">NIK / Nama</label>
@@ -80,7 +80,7 @@
 										<?php endif; ?>
 									</form>
 									<div id="form-melengkapi-data-peserta">
-										<form id="validasi" action="<?= $form_action?>/<?= $suplemen['id']?>" method="POST" enctype="multipart/form-data" class="form-horizontal">
+										<?=form_open_multipart("$form_action/$suplemen[id]", 'id=validasi class=form-horizontal')?>
 											<div class="form-group">
 												<label  class="col-sm-3 control-label"></label>
 												<div class="col-sm-8">
@@ -113,4 +113,3 @@
 		</div>
 	</section>
 </div>
-

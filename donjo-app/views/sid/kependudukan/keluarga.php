@@ -60,7 +60,7 @@
 						<div class="row">
 							<div class="col-sm-12">
 								<div class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-									<form id="mainform" name="mainform" action="" method="post">
+									<?=form_open(null, 'id="mainform" name=mainform')?>
 										<div class="row">
 											<div class="col-sm-9">
 												<select class="form-control input-sm" name="status_dasar" onchange="formAction('mainform', '<?=site_url('keluarga/status_dasar')?>')">
@@ -179,7 +179,7 @@
 									<div class="row">
 										<div class="col-sm-6">
 											<div class="dataTables_length">
-												<form id="paging" action="<?= site_url("keluarga")?>" method="post" class="form-horizontal">
+												<?=form_open(site_url('keluarga'), 'id=paging class=form-horizontal')?>
 													<label>
 														Tampilkan
 														<select name="per_page" class="form-control input-sm" onchange="$('#paging').submit()">
@@ -263,4 +263,3 @@
 		</div>
 	</section>
 </div>
-

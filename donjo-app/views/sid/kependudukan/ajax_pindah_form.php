@@ -67,7 +67,7 @@
 		</div>
 	</div>
 <?php else: ?>
-<form action="<?= $form_action?>" method="post" id="validasi">
+<?=form_open($form_action, 'id=validasi')?>
 	<input type="hidden" name="rt" value="">
 	<div class='modal-body'>
 		<div class="row">

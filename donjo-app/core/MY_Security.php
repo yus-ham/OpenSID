@@ -1,8 +1,22 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-class MY_Security extends CI_Security {
+class MY_Security extends CI_Security
+{
+	/** @inheritdoc */
+	public function csrf_show_error()
+	{
+		$message = 'Bad Request';
 
-  protected function _sanitize_naughty_html($matches)
+		if (ENVIRONMENT === 'development')
+		{
+			$message .= '<br>CSRF Verification Failed';
+		}
+
+		set_status_header(400);
+		exit($message);
+	}
+
+	protected function _sanitize_naughty_html($matches)
 	{
 		static $naughty_tags    = array(
 			'alert', 'area', 'prompt', 'confirm', 'applet', 'audio', 'basefont', 'base', 'behavior', 'bgsound',
@@ -10,7 +24,7 @@ class MY_Security extends CI_Security {
 			'iframe', 'input', 'button', 'select', 'isindex', 'layer', 'link', 'meta', 'keygen', 'object',
 			'plaintext', 'style', 'script', 'textarea', 'title', 'math', 'video', 'svg', 'xml', 'xss'
 		);
-    
+
     //attribut style dihilangkan disini, dampak issue #761
 		static $evil_attributes = array(
 			'on\w+', 'xmlns', 'formaction', 'form', 'xlink:href', 'FSCommand', 'seekSegmentTime'
