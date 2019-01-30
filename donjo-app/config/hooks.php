@@ -11,9 +11,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |	https://codeigniter.com/user_guide/general/hooks.html
 |
 */
-$hook['pre_system']  = array(
-   'class'     => 'Router',
-   'function'  => 'route',
-   'filename'  => 'router.php',
-   'filepath'  => 'hooks'
-);
+$hook['post_controller_constructor'][] = function() {
+	$ci = get_instance();
+	$ci->setting->auth OR $ci->config->load('aauth_init',null,true);
+	run_uac();
+};

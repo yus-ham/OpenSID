@@ -36,6 +36,16 @@ $config['defaultAdminAuthInfo'] = array(
     'password'=> 'sid304'
 );
 
+$config['aauth_override'] = array(
+	'no_permission' => 'siteman',
+	'use_password_hash' => true,
+	'login_with_name' => true,
+	'admin_group' => 'administrator',
+	'default_group' => 'warga',
+ 'max_login_attempt' => 3,
+ 'max_login_attempt_time_period'  => "5 minutes",
+);
+
 // ==========================================================================
 
 // Konfigurasi tambahan untuk aplikasi
