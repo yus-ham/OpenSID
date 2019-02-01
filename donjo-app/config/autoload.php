@@ -39,7 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |  $autoload['packages'] = array(APPPATH.'third_party', '/usr/local/shared');
 |
 */
-$autoload['packages'] = array(APPPATH.'third_party');
+$autoload['packages'] = array(APPPATH.'../vendor/ci-aauth/application');
 
 /*
 | -------------------------------------------------------------------
@@ -89,7 +89,7 @@ $autoload['drivers'] = array('session');
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('url','donjolib','date','pict','opensid','database','surat');
+$autoload['helper'] = array('url','donjolib','date','pict','opensid','database','surat','uac');
 
 /*
 | -------------------------------------------------------------------
