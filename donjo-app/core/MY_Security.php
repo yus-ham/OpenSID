@@ -83,7 +83,6 @@ class MY_Security extends CI_Security
 				{
 					$attributes[] = $attribute[0][0];
 				}
-
 				$matches['attributes'] = substr($matches['attributes'], $attribute[0][1] + strlen($attribute[0][0]));
 			}
 			while ($matches['attributes'] !== '');
@@ -93,7 +92,16 @@ class MY_Security extends CI_Security
 				: ' '.implode(' ', $attributes);
 			return '<'.$matches['slash'].$matches['tagName'].$attributes.'>';
 		}
-
 		return $matches[0];
+	}
+
+	/** @inheritdoc */
+	public function csrf_show_error()
+	{
+		$heading = 'Bad Request';
+		$message = "CSRF Verification Failed.".
+		           "<br><button onclick='history.back()'><< Kembali</button>";
+
+		show_error($message, 400, $heading);
 	}
 }

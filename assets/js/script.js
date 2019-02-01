@@ -1,4 +1,5 @@
-$( window ).on( "load", function() {
+$( window ).on( "load", function()
+{
 	// Scroll ke menu aktif perlu dilakukan di onload sesudah semua loading halaman selesai
 	// Tidak bisa di document.ready
 	// preparing var for scroll via query selector
@@ -348,7 +349,9 @@ function deleteAllBox(idForm, action)
 	});
 	return false;
 }
-function aksiBorongan(idForm, action) {
+
+function aksiBorongan(idForm, action)
+{
 	$('#confirm-status').modal('show');
 	$('#ok-status').click(function ()
 	{
@@ -360,8 +363,7 @@ function aksiBorongan(idForm, action) {
 
 function modalBox()
 {
-	$('#modalBox').on('show.bs.modal', function(e)
-	{
+	$('#modalBox').on('show.bs.modal', function(e) {
 		var link = $(e.relatedTarget);
 		var title = link.data('title');
 		var modal = $(this)
@@ -379,6 +381,7 @@ function mapBox()
 		$(this).find('.fetched-data').load(link.attr('href'));
 	});
 }
+
 function formAction(idForm, action, target = '')
 {
 	if (target != '')
@@ -391,7 +394,9 @@ function formAction(idForm, action, target = '')
 
 function notification(type, message)
 {
-	if ( type =='') {return};
+	if (!type) {
+		return;
+	}
 	$('#maincontent').prepend(''
 		+'<div id="notification" class="alert alert-'+type+' alert-dismissible">'
 		+'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
@@ -419,7 +424,8 @@ function cari_nik()
 	});
 }
 
-$(function(){
+$(function()
+{
 	$('#op_item input:checked').parent().css({'background':'#c9cdff','border':'0.5px solid #7a82eb'});
 	$('#op_item input').change(function()
 	{
@@ -440,8 +446,7 @@ $(function(){
 	})
 });
 
-
-;(function()
+(function()
 {
 	var csrf_param = $('meta[name=csrf-param]').attr('content')
 
