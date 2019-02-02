@@ -2,23 +2,9 @@
 
 class MY_Security extends CI_Security
 {
-	/** @inheritdoc */
-	public function csrf_show_error()
-	{
-		$message = 'Bad Request';
-
-		if (ENVIRONMENT === 'development')
-		{
-			$message .= '<br>CSRF Verification Failed';
-		}
-
-		set_status_header(400);
-		exit($message);
-	}
-
 	protected function _sanitize_naughty_html($matches)
 	{
-		static $naughty_tags    = array(
+		static $naughty_tags = array(
 			'alert', 'area', 'prompt', 'confirm', 'applet', 'audio', 'basefont', 'base', 'behavior', 'bgsound',
 			'blink', 'body', 'embed', 'expression', 'form', 'frameset', 'frame', 'head', 'html', 'ilayer',
 			'iframe', 'input', 'button', 'select', 'isindex', 'layer', 'link', 'meta', 'keygen', 'object',
