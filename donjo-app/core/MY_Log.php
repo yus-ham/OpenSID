@@ -10,11 +10,15 @@ class MY_Log extends CI_Log
 
 		if (ENVIRONMENT === 'development')
 		{
-			session_start();
-			$ajax = strtolower(@$_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest' ? ' (AJAX)' : null;
+			@session_start();
 			$message = "\n================================================================================================\n";
-			$message .= sprintf("Request%s: %s %s\n", $ajax, $_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-			$message .= "\nSession: ". session_id() ."\n". print_r($_SESSION,8);
+			$message .= print_r([
+					'uri' => $_SERVER['REQUEST_URI'],
+					'ajax' => intval(@$_SERVER['X_REQUESTED_WITH'] == 'XMLHttpRequest'),
+					'get' => $_GET,
+					'post' => $_POST,
+					'session: '. session_id() => $_SESSION,
+			],1);
 			$this->write_log('debug', $message);
 		}
 	}
