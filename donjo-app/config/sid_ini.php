@@ -37,6 +37,7 @@ $config['defaultAdminAuthInfo'] = array(
 );
 
 $config['aauth_override'] = array(
+	'query_user_vars' => array('nama','foto'),
 	'no_permission' => 'siteman',
 	'use_password_hash' => true,
 	'login_with_name' => true,
