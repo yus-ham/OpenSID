@@ -1,4 +1,5 @@
 <?php
+
 		$ci = get_instance();
 		$ci->load->dbforge();
 
@@ -17,6 +18,7 @@
 				'null' => FALSE,
 			),
 		));
+
 		$ci->dbforge->add_key("group_id",true);
 		$ci->dbforge->add_key("subgroup_id",true);
 		$ci->dbforge->create_table("aauth_group_to_group", TRUE);
@@ -41,6 +43,7 @@
 				'null' => TRUE,
 			)
 		));
+
 		$ci->dbforge->add_key("name");
  		$ci->dbforge->add_key("id", true);
 		$ci->dbforge->create_table("aauth_groups", TRUE);
@@ -71,6 +74,7 @@
 				'default' => '0',
 			),
 		));
+
 		$ci->dbforge->add_key("id",true);
 		$ci->dbforge->create_table("aauth_login_attempts", TRUE);
 		$ci->db->query('ALTER TABLE  `aauth_login_attempts` ENGINE = InnoDB');
@@ -90,6 +94,7 @@
 				'null' => FALSE,
 			),
 		));
+
 		$ci->dbforge->add_key("perm_id",true);
 		$ci->dbforge->add_key("group_id",true);
 		$ci->dbforge->create_table("aauth_perm_to_group", TRUE);
@@ -110,6 +115,7 @@
 				'null' => FALSE,
 			),
 		));
+
 		$ci->dbforge->add_key("perm_id", true);
 		$ci->dbforge->add_key("user_id", true);
 		$ci->dbforge->create_table("aauth_perm_to_user", TRUE);
@@ -134,6 +140,7 @@
 				'null' => TRUE,
 			),
 		));
+
 		$ci->dbforge->add_key("name");
 		$ci->dbforge->add_key("id",true);
 		$ci->dbforge->create_table("aauth_perms", TRUE);
@@ -154,6 +161,7 @@
 				'null' => FALSE,
 			),
 		));
+
 		$ci->dbforge->add_key("user_id",true);
 		$ci->dbforge->add_key("group_id",true);
 		$ci->dbforge->create_table("aauth_user_to_group", TRUE);
@@ -184,6 +192,7 @@
 				'null' => TRUE,
 			),
 		));
+
 		$ci->dbforge->add_key("id",true);
 		$ci->dbforge->create_table("aauth_user_variables", TRUE);
 		$ci->db->query('ALTER TABLE  `aauth_user_variables` ENGINE = InnoDB');
@@ -256,6 +265,7 @@
 				'null' => TRUE,
 			),
 		));
+
 		$ci->dbforge->add_key("id",true);
 		$ci->dbforge->add_key("username");
  		$ci->dbforge->create_table("aauth_users", TRUE);
@@ -267,44 +277,64 @@
 		$ci->auth->create_group('public', 'Grup pengguna publik');
 		$ci->auth->create_group('warga', 'Grup pengguna untuk pengguna baru');
 
-		foreach ($ci->db->get('user_grup')->result() as $old_grup) {
+		foreach ($ci->db->get('user_grup')->result() as $old_grup) 
+		{
 			$grup = strtolower($old_grup->nama);
+
 			if (!$id = $ci->auth->get_group_id($grup))
 			{
 				$id = $ci->auth->create_group($grup, ucfirst($grup));
 			}
+
 			$group_ids[$old_grup->id] = $id;
 			$grup == 'public' OR $ci->auth->add_subgroup($grup, 'public');
 		}
 
-		foreach ($ci->db->get('user')->result() as $old_user) {
-			if (!$new_user = $ci->auth->get_user_id($old_user->email)) {
+		foreach ($ci->db->get('user')->result() as $old_user)
+		{
+			if (!$new_user = $ci->auth->get_user_id($old_user->email))
+			{
 				$ci->db->insert('aauth_users', array(
 						'email' => $old_user->email,
 						'username' => strtolower($old_user->username),
 						'pass' => $old_user->password
 				));
+
 				$new_user = $ci->db->insert_id();
 			}
-			if (isset($group_ids[$old_user->id_grup])) {
+
+			if (isset($group_ids[$old_user->id_grup]))
+			{
 				$old_user->id == $ci->session->user && $admin = $new_user;
 				$ci->auth->add_member($new_user, $group_ids[$old_user->id_grup]);
 			}
+
+			$old_user->active OR $ci->auth->ban_user($new_user);
+
+			$ci->auth->set_user_vars(array(
+					'nama' => $old_user->nama,
+					'foto' => $old_user->foto, 
+			), $new_user);
 		}
 
-		foreach ($all_perms as $perm) {
+		foreach ($all_perms as $perm)
+		{
 			$perm = get_perm($perm);
-			if (!$ci->auth->get_perm_id($perm)) {
+
+			if (!$ci->auth->get_perm_id($perm))
+			{
 				$def = ucfirst(preg_replace('~_|/~', ' ', $perm));
 				$ci->auth->create_perm($perm, $def);
 			}
 		}
 
-		foreach ($public_perms as $perm) {
+		foreach ($public_perms as $perm)
+		{
 			$ci->auth->allow_group('public', get_perm($perm));
 		}
 
-		foreach ($groups_main_perms as $group => $perm) {
+		foreach ($groups_main_perms as $group => $perm)
+		{
 			$perm = get_perm('main_perm:'. $perm);
 			$ci->auth->create_perm($perm);
 			$ci->auth->allow_group($group, $perm);

@@ -2194,52 +2194,58 @@ class Aauth {
 	# User Variables
 	########################
 
+	/**
+	 * Set user variables as key value pairs
+	 * If user id not given and current user is logged in, the var which has key listed in config ['query_user_vars'] will also cached to user session. 
+	 *
+	 * @param array $vars key value pairs
+	 * @param int $user_id The user id that variables belongs to. if not given current user id will be used.
+	 * @return bool false if user not found. true if any succeed variable insertion to database succeed. otherwise false
+	 */
+	public function set_user_vars( $vars, $user_id = FALSE ){
+		$curr_user = false;
+
+		if ( !$user_id ){
+			$user_id = $curr_user = $this->CI->session->id;
+ 		}
+
+		$this->aauth_db->select('1')->where('id', $user_id);
+		$query = $this->aauth_db->get($this->config_vars['users']);
+ 
+		if (!$query->num_rows()) {
+ 			return false;
+		}
+
+		$vars = (array)$vars;
+
+		$this->aauth_db->where('user_id', $user_id);
+		$this->aauth_db->where_in('data_key', array_keys($vars) );
+		$this->aauth_db->delete( $this->config_vars['user_variables'] );
+
+		foreach ($vars as $key => $value) {
+			$vars[$key] = array(
+				'data_key' => $key,
+				'value' => $value,
+				'user_id' => $user_id
+			);
+			if ($curr_user && in_array($key, $this->config_vars['query_user_vars'])) {
+				$this->CI->session->$key = $value;
+			}
+		}
+		return (bool)$this->aauth_db->insert_batch( $this->config_vars['user_variables'], $vars );
+	}
+
 	//tested
 	/**
 	 * Set User Variable as key value
-	 * if variable not set before, it will ve set
-	 * if set, overwrites the value
+	 *
 	 * @param string $key
 	 * @param string $value
 	 * @param int $user_id ; if not given current user
 	 * @return bool
 	 */
 	public function set_user_var( $key, $value, $user_id = FALSE ) {
-
-		if ( ! $user_id ){
-			$user_id = $this->CI->session->userdata('id');
-		}
-
-		// if specified user is not found
-		if ( ! $this->get_user($user_id)){
-			return FALSE;
-		}
-
-		// if var not set, set
-		 if ($this->get_user_var($key,$user_id) ===FALSE) {
-
-			$data = array(
-				'data_key' => $key,
-				'value' => $value,
-				'user_id' => $user_id
-			);
-
-			return $this->aauth_db->insert( $this->config_vars['user_variables'] , $data);
-		}
-		// if var already set, overwrite
-		else {
-
-			$data = array(
-				'data_key' => $key,
-				'value' => $value,
-				'user_id' => $user_id
-			);
-
-			$this->aauth_db->where( 'data_key', $key );
-			$this->aauth_db->where( 'user_id', $user_id);
-
-			return $this->aauth_db->update( $this->config_vars['user_variables'], $data);
-		}
+		return $this->set_user_vars( array($key=>$value), $user_id );
 	}
 
 	//tested
