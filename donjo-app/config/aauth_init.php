@@ -323,7 +323,8 @@
 
 			if (!$ci->auth->get_perm_id($perm))
 			{
-				$def = ucfirst(preg_replace('~_|/~', ' ', $perm));
+				$def = explode('/',str_replace('_',' ',$perm));
+				$def = ucfirst($def[1]) .' '. $def[0];
 				$ci->auth->create_perm($perm, $def);
 			}
 		}
