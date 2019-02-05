@@ -11,8 +11,4 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |	https://codeigniter.com/user_guide/general/hooks.html
 |
 */
-$hook['post_controller_constructor'][] = function() {
-	$ci = get_instance();
-	$ci->setting->auth OR $ci->config->load('aauth_init',null,true);
-	run_uac();
-};
+$hook['post_controller_constructor'][] = 'run_uac';

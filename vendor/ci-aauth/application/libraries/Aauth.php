@@ -111,9 +111,12 @@ class Aauth {
 		$this->CI->load->library('session');
 		$this->CI->lang->load('aauth');
 
- 		// config/aauth.php
-		$this->CI->config->load('aauth');
-		$this->config_vars = array_merge($this->CI->config->item('aauth'), (array)$config);
+		$this->config_vars = $config;
+ 		if( empty($config) OR isset($config['aauth']) ){
+			// config/aauth.php
+			$this->CI->config->load('aauth');
+			$this->config_vars = $this->CI->config->item('aauth');
+		}
 
 		$this->aauth_db = $this->CI->load->database($this->config_vars['db_profile'], TRUE);
 

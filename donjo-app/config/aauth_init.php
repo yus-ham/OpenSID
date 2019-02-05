@@ -272,7 +272,7 @@
 		$ci->db->query( 'ALTER TABLE  `aauth_users` ENGINE = InnoDB');
 
 		require __DIR__ .'/aauth_data.php';
-		$ci->load->library('aauth', $ci->config->item('aauth_override'), 'auth');
+		$ci->load->library('aauth', false, 'auth');
 
 		$ci->auth->create_group('public', 'Grup pengguna publik');
 		$ci->auth->create_group('warga', 'Grup pengguna untuk pengguna baru');
