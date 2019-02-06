@@ -343,38 +343,31 @@ class Aauth {
 	 */
 	public function is_loggedin() {
 
-		if ( $this->CI->session->userdata('loggedin') ){
+		if ( $this->CI->session->id ){
 			return TRUE;
-		} else {
-			if( ! $this->CI->input->cookie('user', TRUE) ){
-				return FALSE;
-			} else {
-				$cookie = explode('-', $this->CI->input->cookie('user', TRUE));
-				if(!is_numeric( $cookie[0] ) OR strlen($cookie[1]) < 13 ){return FALSE;}
-				else{
-					$query = $this->aauth_db->where('id', $cookie[0]);
-					$query = $this->aauth_db->where('remember_exp', $cookie[1]);
-					$query = $this->aauth_db->get($this->config_vars['users']);
-
-					$row = $query->row();
-
-					if ($query->num_rows() < 1) {
-						$this->update_remember($cookie[0]);
-						return FALSE;
-					}else{
-
-						if(strtotime($row->remember_time) > strtotime("now") ){
-							$this->login_fast($cookie[0]);
-							return TRUE;
-						}
-						// if time is expired
-						else {
-							return FALSE;
-						}
-					}
-				}
-			}
 		}
+		if( !$cookie = $this->CI->input->cookie('user', TRUE) ){
+			return FALSE;
+		}
+		$cookie = explode('-', $cookie);
+		if(!is_numeric( $cookie[0] ) OR strlen($cookie[1]) < 13 ){
+			return FALSE;
+		}
+		$query = $this->aauth_db->where('id', $cookie[0]);
+		$query = $this->aauth_db->where('remember_exp', $cookie[1]);
+		$query = $this->aauth_db->get($this->config_vars['users']);
+
+		$row = $query->row();
+
+		if ($query->num_rows() < 1) {
+			$this->update_remember($cookie[0]);
+			return FALSE;
+		}
+		if(strtotime($row->remember_time) > strtotime("now") ){
+			$this->login_fast($cookie[0]);
+			return TRUE;
+		}
+		// if time is expired
 		return FALSE;
 	}
 
