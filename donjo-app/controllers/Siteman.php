@@ -29,7 +29,6 @@ class Siteman extends CI_Controller {
  		$this->user_model->validate_admin_has_changed_password();
 		$_SESSION['dari_login'] = '1';
 		$uri = $this->session->return_uri;
-		strpos($uri, 'siteman') === 0 && $uri = null;
 		unset($_SESSION['return_uri']);
  		redirect($uri);
  	}
