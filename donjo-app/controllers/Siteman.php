@@ -32,4 +32,10 @@ class Siteman extends CI_Controller {
 		unset($_SESSION['return_uri']);
  		redirect($uri);
  	}
+
+	public function logout()
+	{
+		$this->auth->logout();
+		redirect('siteman');
+	}
 }

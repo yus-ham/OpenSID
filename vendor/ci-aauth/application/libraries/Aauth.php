@@ -438,8 +438,9 @@ class Aauth {
 			'path'	 => '/',
 		);
 		$this->CI->input->set_cookie($cookie);
+		$keys = array('id','email','username');
 
-		return $this->CI->session->sess_destroy();
+		return $this->CI->session->unset_userdata($keys);
 	}
 
 	//tested
