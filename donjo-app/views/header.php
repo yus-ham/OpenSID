@@ -69,22 +69,22 @@
 						<ul class="nav navbar-nav">
 							<li class="dropdown user user-menu">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-								<?php if ($foto): ?>
-									<img src="<?= AmbilFoto($foto)?>" class="user-image" alt="User Image"/>
+								<?php if ($user->foto): ?>
+									<img src="<?= AmbilFoto($user->foto)?>" class="user-image" alt="User Image"/>
 								<?php else :?>
 									<img src="<?= base_url()?>assets/files/user_pict/kuser.png" class="user-image" alt="User Image"/>
 								<?php endif; ?>
-									<span class="hidden-xs"><?=$nama?> </span>
+									<span class="hidden-xs"><?=$user->nama?> </span>
 								</a>
 								<ul class="dropdown-menu">
 									<li class="user-header">
-										<?php if ($foto): ?>
-											<img src="<?=AmbilFoto($foto)?>" class="img-circle" alt="User Image"/>
+										<?php if ($user->foto): ?>
+											<img src="<?=AmbilFoto($user->foto)?>" class="img-circle" alt="User Image"/>
 										<?php else :?>
 											<img src="<?= base_url()?>assets/files/user_pict/kuser.png" class="img-circle" alt="User Image"/>
 										<?php endif; ?>
 										<p>Anda Login Sebagai</p>
-										<p><strong><?=$nama?></strong></p>
+										<p><strong><?=$user->nama?></strong></p>
 									</li>
 									<li class="user-footer">
 										<div class="pull-left">

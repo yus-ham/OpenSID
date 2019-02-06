@@ -886,15 +886,15 @@ class Aauth {
 
 	//tested
 	/**
-	 * Get user
 	 * Get user information
 	 * @param int|bool $user_id User id to get or FALSE for current user
 	 * @return object User information
 	 */
 	public function get_user($user_id = FALSE) {
 
-		if ($user_id == FALSE)
+		if ($user_id == FALSE) {
 			$user_id = $this->CI->session->userdata('id');
+		}
 
 		$query = $this->aauth_db->where('id', $user_id);
 		$query = $this->aauth_db->get($this->config_vars['users']);
@@ -2311,32 +2311,28 @@ class Aauth {
 	}
 
 
-    /**
+	/**
 	 * Get User Variables by user id
-	 * Return array with all user keys & variables
-	 * @param int $user_id ; if not given current user
-	 * @return bool|array , FALSE if var is not set, the value of var if set
-	 */
+	 * Return object with all user variables key-value as its properties
+	 * @param int $user_id ; if not given current user will be used
+	 * @return bool|object FALSE if user not found or user vars object
+ 	 */
 	public function get_user_vars( $user_id = FALSE){
 
-		if ( ! $user_id ){
-			$user_id = $this->CI->session->userdata('id');
-		}
-
-		// if specified user is not found
-		if ( ! $this->get_user($user_id)){
+		if ( !$user = $this->get_user($user_id) ){
 			return FALSE;
 		}
 
 		$query = $this->aauth_db->select('data_key, value');
-
-		$query = $this->aauth_db->where('user_id', $user_id);
-
+		$query = $this->aauth_db->where('user_id', $user->id);
 		$query = $this->aauth_db->get( $this->config_vars['user_variables'] );
 
-		return $query->result();
-
-	}
+		$vars = new \stdClass();
+		foreach ($query->result() as $row) {
+			$vars->{$row->data_key} = $row->value;
+		}
+		return $vars;
+ 	}
 
 	/**
 	 * List User Variable Keys by UserID

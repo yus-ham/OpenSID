@@ -83,22 +83,7 @@ class Header_model extends CI_Model {
 	 * global variabel
 	 * */
 		$outp["sasaran"] = array("1"=>"Penduduk", "2"=>"Keluarga / KK", "3"=>"Rumah Tangga", "4"=>"Kelompok/Organisasi Kemasyarakatan");
-
-		/*
-		 * Pembenahan per 13 Juli 15, sebelumnya ada notifikasi Error, saat $_SESSOIN['user'] nya kosong!
-		 * */
-		$id = @$_SESSION['user'];
-		$sql = "SELECT nama,foto FROM user WHERE id = ?";
-		$query = $this->db->query($sql, $id);
-		if ($query)
-		{
-			if ($query->num_rows() > 0)
-			{
-				$data  = $query->row_array();
-				$outp['nama'] = $data['nama'];
-				$outp['foto'] = $data['foto'];
-			}
-		}
+		$outp['user'] = $this->auth->get_user_vars();
 
 		$sql = "SELECT * FROM config WHERE 1";
 		$query = $this->db->query($sql);
