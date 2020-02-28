@@ -40,5 +40,5 @@ log-*.php
 info.php
 **/.DS_Store
 mitra
-
-
+tests/_output/
+tests/_support/_generated/

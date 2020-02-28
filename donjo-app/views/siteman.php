@@ -52,7 +52,7 @@
 											<input name="password" id="password" type="password" placeholder="Kata sandi" <?php if ($_SESSION['siteman_wait']==1): ?>disabled="disabled"<?php endif ?> value="" required class="form-username form-control input-error">
 										</div>
 										<div class="form-group">
-											<input type="checkbox" id="checkbox" class="form-checkbox"> Tampilkan kata sandi
+											<input type="checkbox" id="checkbox" class="form-checkbox show-password-check"> Tampilkan kata sandi
 										</div>
 										<hr />
 										<button type="submit" class="btn">MASUK</button>

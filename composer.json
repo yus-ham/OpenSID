@@ -1,0 +1,49 @@
+{
+    "name": "opensid/opensid",
+    "description": "Sistem Informasi Desa (SID) yang sengaja dibuat terbuka agar dapat dikembangkan secara bersama-sama oleh komunitas peduli SID",
+    "keywords": [
+        "OpenSID",
+        "Sistem Informasi Desa",
+        "OpenDesa"
+    ],
+    "homepage": "https://github.com/OpenSID/OpenSID",
+    "type": "project",
+    "license": "GNU General Public License Version 3",
+    "support": {
+        "issues": "https://github.com/OpenSID/OpenSID/issues?state=open",
+        "forum": "http://www.facebook.com/groups/opensid",
+        "wiki": "https://github.com/OpenSID/OpenSID/wiki/",
+        "source": "https://github.com/OpenSID/OpenSID"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=5.6"
+    },
+    "require-dev": {
+        "php": ">=7.2",
+        "codeception/codeception": "^4.0",
+        "codeception/verify": "~0.5.0 || ~1.1.0",
+        "codeception/specify": "~0.4.6",
+        "codeception/module-filesystem": "^1.0.0",
+        "codeception/module-phpbrowser": "^1.0",
+        "codeception/module-asserts": "^1.0.0"
+    },
+    "config": {
+        "process-timeout": 1800,
+        "fxp-asset": {
+            "enabled": false
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "tests/_support"
+        ]
+    }
+}
