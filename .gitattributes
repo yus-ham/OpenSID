@@ -1,1 +1,10 @@
 .gitignore merge=ours
+
+# Abaikan files saat membuat arsip (zip, tar)
+/.github            export-ignore
+/.gitignore         export-ignore
+/.gitattributes     export-ignore
+/tests              export-ignore
+
+# https://about.gitlab.com/2015/02/10/gitlab-reduced-merge-conflicts-by-90-percent-with-changelog-placeholders/
+/catatan_rilis_*    merge=union
