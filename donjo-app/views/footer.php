@@ -38,6 +38,7 @@
 		<script src="<?= base_url()?>assets/js/adminlte.min.js"></script>
 		<script src="<?= base_url()?>assets/js/validasi.js"></script>
 		<script src="<?= base_url()?>assets/js/jquery.validate.min.js"></script>
+		<script src="<?= base_url()?>assets/js/localization/messages_id.js"></script>
 		<!-- Numeral js -->
 		<script src="<?= base_url()?>assets/js/numeral.min.js"></script>
 		<!-- Script-->
@@ -46,28 +47,39 @@
 		<!-- NOTIFICATION-->
 		<script type="text/javascript">
 
+			function tampil_badge(elem, url)
+			{
+				elem.load(url);
+				setTimeout(function()
+				{
+					if ( elem.text().trim().length )
+						elem.show();
+					else
+						elem.hide();
+				}, 500);
+			}
+
+			function refresh_badge(elem, url)
+			{
+				if ( ! elem.length) return;
+
+				tampil_badge(elem, url);
+				var refreshInbox = setInterval(function()
+				{
+					tampil_badge(elem, url);
+				}, 10000);
+			}
+
 			$('document').ready(function()
 			{
 
 				setTimeout(function()
 				{
-					if ( $("#b_komentar").length )
-					{
-						$("#b_komentar").load("<?= site_url()?>notif/komentar");
-						var refreshKomentar = setInterval(function()
-						{
-							$("#b_komentar").load("<?= site_url()?>notif/komentar");
-						}, 3000);
-					}
-					if ( $("#b_lapor").length )
-					{
-						$("#b_lapor").load("<?= site_url()?>notif/lapor");
-						var refreshLapor = setInterval(function()
-						{
-							$("#b_lapor").load("<?= site_url()?>notif/lapor");
-						}, 3000);
-					}
+					refresh_badge($("#b_permohonan_surat"), "<?= site_url('notif/permohonan_surat'); ?>");
+					refresh_badge($("#b_komentar"), "<?= site_url('notif/komentar'); ?>");
+					refresh_badge($("#b_inbox"), "<?= site_url('notif/inbox'); ?>");
 				}, 500);
+
 				if ($('#success-code').val() == 1)
 				{
 					notify = 'success';
@@ -81,12 +93,12 @@
 				else if ($('#success-code').val() == -2)
 				{
 					notify = 'error';
-					notify_msg = 'Data gagal diimpan, nama id sudah ada!';
+					notify_msg = 'Data gagal disimpan, nama id sudah ada!';
 				}
 				else if ($('#success-code').val() == -3)
 				{
 					notify = 'error';
-					notify_msg = 'Data gagal diimpan, nama id sudah ada!';
+					notify_msg = 'Data gagal disimpan, nama id sudah ada!';
 				}
 				else if ($('#success-code').val() == 4)
 				{
@@ -108,20 +120,6 @@
 			});
 		</script>
 		<?php $_SESSION['success']=0; ?>
-
-		<!-- Notifikasi Ganti Password Login -->
-		<?php if ($this->session->admin_warning && !config_item('demo')): ?>
-			<script type="text/javascript">
-				<?php if (isset($_SESSION['dari_login'])): ?>
-					$(window).on('load', function()
-					{
-						$('#massageBox').modal('show');
-						$('#ok').click(function() {$('#massageBox').modal('hide');});
-					});
-					<?php unset($_SESSION['dari_login']) ?>
-				<?php endif; ?>
-			</script>
-		<?php endif ?>
 
 		<!-- Notifikasi PIN Warga -->
 		<script type="text/javascript">

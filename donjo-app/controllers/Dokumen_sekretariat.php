@@ -1,15 +1,55 @@
 <?php  if(!defined('BASEPATH')) exit('No direct script access allowed');
+/*
+ *  File ini:
+ *
+ * Controller untuk modul Sekretariat
+ *
+ * donjo-app/controllers/Dokumen_sekretariat.php
+ *
+ */
+/*
+ *  File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package	OpenSID
+ * @author	Tim Pengembang OpenDesa
+ * @copyright	Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright	Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license	http://www.gnu.org/licenses/gpl.html	GPL V3
+ * @link 	https://github.com/OpenSID/OpenSID
+ */
 
 class Dokumen_sekretariat extends Admin_Controller {
 
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
-		$this->load->model('header_model');
+
 		$this->load->model('web_dokumen_model');
 		$this->load->model('referensi_model');
 		$this->modul_ini = 15;
+		$this->sub_modul_ini = 95;
 	}
 
 	public function index($kat=2, $p=1, $o=0)
@@ -54,14 +94,10 @@ class Dokumen_sekretariat extends Admin_Controller {
 			}
 		}
 
-		$header = $this->header_model->get_data();
 		$this->_set_tab($kat);
-		$nav['act_sub'] = 95;
-    $header['minsidebar'] = 1;
-		$this->load->view('header', $header);
-		$this->load->view('nav', $nav);
-		$this->load->view('dokumen/table', $data);
-		$this->load->view('footer');
+		$this->set_minsidebar(1);
+
+		$this->render('dokumen/table', $data);
 	}
 
 	public function clear($kat=2)
@@ -89,15 +125,10 @@ class Dokumen_sekretariat extends Admin_Controller {
 			$data['form_action'] = site_url("dokumen_sekretariat/insert");
 		}
 		$data['kat_nama'] = $this->web_dokumen_model->kat_nama($kat);
-		$header = $this->header_model->get_data();
-		$this->_set_tab($kat);
-		$nav['act'] = 15;
-		$nav['act_sub'] = $this->tab_ini;
 
-		$this->load->view('header', $header);
-		$this->load->view('nav',$nav);
-		$this->load->view('dokumen/form', $data);
-		$this->load->view('footer');
+		$this->_set_tab($kat);
+
+		$this->render('dokumen/form', $data);
 	}
 
 	public function search()
@@ -135,7 +166,7 @@ class Dokumen_sekretariat extends Admin_Controller {
 		$kategori = $this->input->post('kategori');
 		if (!empty($kategori))
 			$kat = $this->input->post('kategori');
-  		$outp = $this->web_dokumen_model->update($id);
+		$outp = $this->web_dokumen_model->update($id);
 		if (!$outp) $_SESSION['success'] = -1;
 		redirect("dokumen_sekretariat/peraturan_desa/$kat/$p/$o");
 	}
@@ -143,7 +174,6 @@ class Dokumen_sekretariat extends Admin_Controller {
 	public function delete($kat=1, $p=1, $o=0, $id='')
 	{
 		$this->redirect_hak_akses('h', "dokumen_sekretariat/index/$kat/$p/$o");
-		$_SESSION['success'] = 1;
 		$this->web_dokumen_model->delete($id);
 		redirect("dokumen_sekretariat/peraturan_desa/$kat/$p/$o");
 	}
@@ -151,7 +181,6 @@ class Dokumen_sekretariat extends Admin_Controller {
 	public function delete_all($kat=1, $p=1, $o=0)
 	{
 		$this->redirect_hak_akses('h', "dokumen_sekretariat/index/$kat/$p/$o");
-		$_SESSION['success'] = 1;
 		$this->web_dokumen_model->delete_all();
 		redirect("dokumen_sekretariat/peraturan_desa/$kat/$p/$o");
 	}

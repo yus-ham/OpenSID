@@ -1,4 +1,4 @@
-<?php class Surat_keluar_model extends CI_Model {
+<?php class Surat_keluar_model extends MY_Model {
   // Konfigurasi untuk library 'upload'
   protected $uploadConfig = array();
 
@@ -21,8 +21,7 @@
 	public function autocomplete()
 	{
 		// TODO: tambahkan kata2 dari isi_singkat
-		$str = autocomplete_str('tujuan', 'surat_keluar');
-		return $str;
+		return $this->autocomplete_str('tujuan', 'surat_keluar');
 	}
 
 	private function search_sql()
@@ -122,9 +121,7 @@
 		$data = $this->input->post(NULL);
 		unset($data['url_remote']);
 		unset($data['nomor_urut_lama']);
-
-		// Normalkan tanggal
-		$data['tanggal_surat'] = tgl_indo_in($data['tanggal_surat']);
+		$this->validasi($data);
 
 		// Adakah lampiran yang disertakan?
 		$adaLampiran = !empty($_FILES['satuan']['name']);
@@ -188,8 +185,18 @@
 		$this->db->trans_complete();
 
 		// Set session berdasarkan hasil operasi
-		$_SESSION['success'] = $indikatorSukses ? 1 : -1;
+		status_sukses($indikatorSukses); //Tampilkan Pesan
 		$_SESSION['error_msg'] = $_SESSION['success'] === 1 ? NULL : ' -> '.$uploadError;
+	}
+
+	private function validasi(&$data)
+	{
+		// Normalkan tanggal
+		$data['tanggal_surat'] = tgl_indo_in($data['tanggal_surat']);
+		// Bersihkan data
+		$data['nomor_surat'] = preg_replace('/[^a-zA-Z0-9-\/\s]/', '', strip_tags($data['nomor_surat']));
+		$data['tujuan'] = strip_tags($data['tujuan']);
+		$data['isi_singkat'] = strip_tags($data['isi_singkat']);
 	}
 
 	/**
@@ -203,11 +210,9 @@
 		$data = $this->input->post(NULL);
 		unset($data['url_remote']);
 		unset($data['nomor_urut_lama']);
+		$this->validasi($data);
 
 		$_SESSION['error_msg'] = NULL;
-
-		// Normalkan tanggal
-		$data['tanggal_surat'] = tgl_indo_in($data['tanggal_surat']);
 
 		// Ambil nama berkas scan lama dari database
 		$berkasLama = $this->getNamaBerkasScan($idSuratMasuk);
@@ -318,8 +323,13 @@
 	 * @param   string  $idSuratMasuk  Id surat masuk
 	 * @return  void
 	 */
-	public function delete($idSuratMasuk)
+	public function delete($idSuratMasuk, $semua=false)
 	{
+		if (!$semua)
+		{
+			$this->session->success = 1;
+			$this->session->error_msg = '';
+		}
 		// Type check
 		$idSuratMasuk = is_string($idSuratMasuk) ? $idSuratMasuk : strval($idSuratMasuk);
 		// Redirect ke halaman surat masuk jika Id kosong
@@ -364,12 +374,15 @@
 		$_SESSION['success'] = is_null($_SESSION['error_msg']) ? 1 : -1;
 	}
 
-	function delete_all(){
+	public function delete_all()
+	{
+		$this->session->success = 1;
+		$this->session->error_msg = '';
+
 		$id_cb = $_POST['id_cb'];
-		if(count($id_cb)){
-			foreach($id_cb as $id){
-				$this->delete($id);
-			}
+		foreach ($id_cb as $id)
+		{
+			$this->delete($id, $semua=true);
 		}
 	}
 

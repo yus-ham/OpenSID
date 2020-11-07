@@ -1,77 +1,108 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+/*
+ *  File ini:
+ *
+ * Controller untuk modul Widget di Web
+ *
+ * donjo-app/controllers/Web_widget.php
+ *
+ */
+/*
+ *  File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package	OpenSID
+ * @author	Tim Pengembang OpenDesa
+ * @copyright	Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright	Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license	http://www.gnu.org/licenses/gpl.html	GPL V3
+ * @link 	https://github.com/OpenSID/OpenSID
+ */
 
 class Web_widget extends Admin_Controller {
+
+	private $set_page;
+	private $list_session;
 
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
-
 		// Jika offline_mode dalam level yang menyembunyikan website,
 		// tidak perlu menampilkan halaman website
 		if ($this->setting->offline_mode >= 2)
 		{
-			redirect('hom_desa');
+			redirect('hom_sid');
 			exit;
 		}
 
-		$this->load->model('header_model');
-		$this->load->model('web_widget_model');
+		$this->load->model(['web_widget_model']);
 		$this->modul_ini = 13;
+		$this->sub_modul_ini = 48;
+		$this->set_page = ['20', '50', '100'];
+		$this->list_session = ['cari', 'filter'];
 	}
 
 	public function clear()
 	{
-		unset($_SESSION['cari']);
-		unset($_SESSION['filter']);
-		unset($_SESSION['table_curpage']);
- 		$this->session->per_page = 20;
+		$this->session->unset_userdata($this->list_session);
+		$this->session->per_page = $this->set_page[0];
 		redirect('web_widget');
 	}
 
-	public function pager()
+	public function index($page = 0, $o = 0)
 	{
-		if (isset($_POST['per_page']))
-			$_SESSION['per_page'] = $_POST['per_page'];
-		redirect("web_widget");
-	}
+		$per_page = $this->input->post('per_page');
+		if (isset($per_page))
+			$this->session->per_page = $per_page;
 
-	public function index($page=0, $o=0)
-	{
+		$data['cari'] = $this->session->cari ?: '';
+		$data['filter'] = $this->session->filter ?: '';
+		$data['func'] = 'index';
+		$data['set_page'] = $this->set_page;
+		$data['per_page'] = $this->session->per_page;
 		$data['paging'] = $this->web_widget_model->paging($page, $o);
 		$data['p'] = $data['paging']->page;
 		$data['o'] = $o;
-		$data['cari'] = $this->session->cari;
-		$data['filter'] = $this->session->filter;
 
-		if (isset($_POST['per_page']))
-		{
-			$this->session->per_page = $_POST['per_page'];
-		}
-		$data['per_page'] = $this->session->per_page;
 		$data['main'] = $this->web_widget_model->list_data($o, $data['paging']->offset, $data['paging']->per_page);
-		$data['keyword'] = $this->web_widget_model->autocomplete();
-
-		$header = $this->header_model->get_data();
-		$nav['act'] = 13;
-		$nav['act_sub'] = 48;
+		$data['keyword'] = $this->web_widget_model->autocomplete($this->input->post('cari'));
 
 		$this->session->page = $data['p'];
 		$this->session->urut_range = array(
-				'min' => $data['main'][0]['urut'],
-				'max' => $data['main'][count($data['main'])-1]['urut']
+			'min' => $data['main'][0]['urut'],
+			'max' => $data['main'][count($data['main'])-1]['urut']
 		);
 
-		$this->load->view('header', $header);
-		$this->load->view('nav', $nav);
-		$this->load->view('web/artikel/widget', $data);
-		$this->load->view('footer');
+		$this->render('web/artikel/widget', $data);
 	}
 
 	public function form($p = 1, $o = 0, $id = '')
 	{
 		$data['p'] = $p;
 		$data['o'] = $o;
+
+		$data['list_widget'] = $this->web_widget_model->list_widget_baru();
 
 		if ($id)
 		{
@@ -84,46 +115,25 @@ class Web_widget extends Admin_Controller {
 			$data['form_action'] = site_url("web_widget/insert");
 		}
 
-		$header = $this->header_model->get_data();
-		$nav['act'] = 13;
-		$nav['act_sub'] = 48;
-
-		$this->load->view('header', $header);
-		$this->load->view('nav', $nav);
-		$this->load->view('web/artikel/widget-form', $data);
-		$this->load->view('footer');
+		$this->render('web/artikel/widget-form', $data);
 	}
 
-	public function search()
+	public function filter($filter)
 	{
-		$cari = $this->input->post('cari');
-		if ($cari != '')
-			$_SESSION['cari'] = $cari;
-		else unset($_SESSION['cari']);
-		redirect("web_widget");
-	}
-
-	public function filter()
-	{
-		$filter = $this->input->post('filter');
-		if ($filter != 0)
-			$_SESSION['filter'] = $filter;
-		else unset($_SESSION['filter']);
-		redirect("web_widget");
+		$value = $this->input->post($filter);
+		if ($value != '')
+			$this->session->$filter = $value;
+		else $this->session->unset_userdata($filter);
+		redirect('web_widget');
 	}
 
 	public function admin($widget)
 	{
-		$header = $this->header_model->get_data();
-		$header['minsidebar'] = 1;
-		$nav['act'] = 13;
-		$nav['act_sub'] = 48;
+		$this->set_minsidebar(1);
 		$data['form_action'] = site_url("web_widget/update_setting/".$widget);
 		$data['setting'] = $this->web_widget_model->get_setting($widget);
-		$this->load->view('header', $header);
-		$this->load->view('nav', $nav);
-		$this->load->view('widgets/admin_'.$widget, $data);
-		$this->load->view('footer');
+
+		$this->render('widgets/admin_'.$widget, $data);
 	}
 
 	public function update_setting($widget)
@@ -174,6 +184,7 @@ class Web_widget extends Admin_Controller {
 		{
 			$page++;
 		}
+
  		redirect("web_widget/index/$page");
 	}
 
@@ -188,5 +199,4 @@ class Web_widget extends Admin_Controller {
 		$this->web_widget_model->lock($id, 2);
 		redirect("web_widget");
 	}
-
 }

@@ -1,14 +1,54 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+/*
+ *  File ini:
+ *
+ * Controller untuk modul Laporan Kependudukan
+ *
+ * donjo-app/controllers/Laporan.php
+ *
+ */
+/*
+ *  File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package	OpenSID
+ * @author	Tim Pengembang OpenDesa
+ * @copyright	Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright	Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license	http://www.gnu.org/licenses/gpl.html	GPL V3
+ * @link 	https://github.com/OpenSID/OpenSID
+ */
 
 class Laporan extends Admin_Controller {
 
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
-		$this->load->model('header_model');
+
 		$this->load->model('laporan_bulanan_model');
 		$this->load->model('pamong_model');
+		$this->load->model('config_model');
 		$this->controller = 'laporan';
 
 		//Initialize Session ------------
@@ -16,8 +56,8 @@ class Laporan extends Admin_Controller {
 		$_SESSION['cari'] = '';
 		//-------------------------------
 
-		$this->load->model('header_model');
 		$this->modul_ini = 3;
+		$this->sub_modul_ini = 28;
 	}
 
 	public function clear()
@@ -55,8 +95,8 @@ class Laporan extends Admin_Controller {
 
 		$data['bulan'] = $data['bulanku'];
 		$data['tahun'] = $data['tahunku'];
-		$data['config'] = $this->laporan_bulanan_model->configku();
-		$data['pamong'] = $this->pamong_model->list_data(true);
+		$data['config'] = $this->config_model->get_data();
+		$data['pamong'] = $this->pamong_model->list_data();
 		$data['penduduk_awal'] = $this->laporan_bulanan_model->penduduk_awal();
 		$data['penduduk_akhir'] = $this->laporan_bulanan_model->penduduk_akhir();
 		$data['kelahiran'] = $this->laporan_bulanan_model->kelahiran();
@@ -65,20 +105,14 @@ class Laporan extends Admin_Controller {
 		$data['pindah'] = $this->laporan_bulanan_model->pindah();
 		$data['hilang'] = $this->laporan_bulanan_model->hilang();
 		$data['lap'] = $lap;
-		$nav['act'] = 3;
-		$nav['act_sub'] = 28;
-		$header = $this->header_model->get_data();
 
-		$this->load->view('header', $header);
-		$this->load->view('nav', $nav);
-		$this->load->view('laporan/bulanan', $data);
-		$this->load->view('footer');
+		$this->render('laporan/bulanan', $data);
 	}
 
 	public function dialog_cetak()
 	{
 		$data['aksi'] = "Cetak";
-		$data['pamong'] = $this->pamong_model->list_data(true);
+		$data['pamong'] = $this->pamong_model->list_data();
 		$data['form_action'] = site_url("laporan/cetak");
 		$this->load->view('laporan/ajax_cetak', $data);
 	}
@@ -86,7 +120,7 @@ class Laporan extends Admin_Controller {
 	public function dialog_unduh()
 	{
 		$data['aksi'] = "Unduh";
-		$data['pamong'] = $this->pamong_model->list_data(true);
+		$data['pamong'] = $this->pamong_model->list_data();
 		$data['form_action'] = site_url("laporan/unduh");
 		$this->load->view('laporan/ajax_cetak', $data);
 	}
@@ -106,7 +140,7 @@ class Laporan extends Admin_Controller {
 	private function data_cetak()
 	{
 		$data = array();
-		$data['config'] = $this->laporan_bulanan_model->configku();
+		$data['config'] = $this->config_model->get_data();
 		$data['bulan'] = $_SESSION['bulanku'];
 		$data['tahun'] = $_SESSION['tahunku'];
 		$data['bln'] = $this->laporan_bulanan_model->bulan($data['bulan']);

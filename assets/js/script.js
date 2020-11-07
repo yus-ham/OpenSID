@@ -49,6 +49,7 @@ $(document).ready(function()
 
 	$('#confirm-status').on('show.bs.modal', function(e) {
 		$(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+		$(this).find('.modal-body').html($(e.relatedTarget).data('body'));
 	});
 	//Delay Alert
 	setTimeout(function()
@@ -61,7 +62,10 @@ $(document).ready(function()
 	}, 2000);
 
 	// Select2 dengan fitur pencarian
-	$('.select2').select2();
+	$('.select2').select2({
+		width: '100%',
+		dropdownAutoWidth : true
+	});
 
 	$('.select2-nik-ajax').select2({
 	  ajax: {
@@ -117,6 +121,20 @@ $(document).ready(function()
 			return $penduduk;
 		}
 	});
+
+	// Select2 menampilkan ikon
+	// https://stackoverflow.com/questions/37386293/how-to-add-icon-in-select2
+	function format_ikon (state) {
+    if (!state.id) { return state.text; }
+    return '<i class="fa fa-lg '+state.id.toLowerCase()+'"></i>&nbsp;&nbsp; '+state.text;
+	}
+	$('.select2-ikon').select2(
+	{
+    templateResult: format_ikon,
+    templateSelection: format_ikon,
+    escapeMarkup: function(m) { return m; }
+	});
+
 	// Select2 dengan fitur pencarian dan boleh isi sendiri
 	$('.select2-tags').select2(
 		{
@@ -136,6 +154,7 @@ $(document).ready(function()
     $(this).closest('form').get(0).reset();
 		// https://stackoverflow.com/questions/15205262/resetting-select2-value-in-dropdown-with-reset-button
 		$('.select2').trigger('change');
+		$('.select2-ikon').trigger('change');
 	});
 
 	//File Upload
@@ -276,6 +295,11 @@ $(document).ready(function()
 	{
 		format: 'DD-MM-YYYY',
 		useCurrent: false,
+		locale:'id'
+	});
+	$('.tgl_indo').datetimepicker(
+	{
+		format: 'DD-MM-YYYY',
 		locale:'id'
 	});
 	$('#tgl_1').datetimepicker(
@@ -519,11 +543,13 @@ function enableHapusTerpilih()
 {
   if ($("input[name='id_cb[]']:checked:not(:disabled)").length <= 0)
   {
+    $(".aksi-terpilih").addClass('disabled');
     $(".hapus-terpilih").addClass('disabled');
     $(".hapus-terpilih").attr('href','#');
   }
   else
   {
+    $(".aksi-terpilih").removeClass('disabled');
     $(".hapus-terpilih").removeClass('disabled');
     $(".hapus-terpilih").attr('href','#confirm-delete');
   }
@@ -558,6 +584,10 @@ function modalBox()
 		var modal = $(this)
 		modal.find('.modal-title').text(title)
 		$(this).find('.fetched-data').load(link.attr('href'));
+		setTimeout(function() {
+			// tambahkan csrf token
+			addCsrfField(modal.find("form")[0]);
+		}, 500);
 	});
 	return false;
 }
@@ -572,6 +602,7 @@ function mapBox()
 }
 function formAction(idForm, action, target = '')
 {
+	csrf_semua_form();
 	if (target != '')
 	{
 		$('#'+idForm).attr('target', target);
@@ -709,5 +740,4 @@ $('document').ready(function()
     $(this).css("padding-bottom", 0);
   })
 });
-
 

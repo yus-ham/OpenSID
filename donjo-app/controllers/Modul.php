@@ -1,43 +1,91 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+/*
+ *  File ini:
+ *
+ * Controller untuk Pengaturan > Modul
+ *
+ * donjo-app/controllers/Modul.php
+ *
+ */
+/*
+ *  File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package	OpenSID
+ * @author	Tim Pengembang OpenDesa
+ * @copyright	Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright	Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license	http://www.gnu.org/licenses/gpl.html	GPL V3
+ * @link 	https://github.com/OpenSID/OpenSID
+ */
 
 class Modul extends Admin_Controller {
+
+	private $list_session;
 
 	public function __construct()
 	{
 		parent::__construct();
-		session_start();
-		$this->load->model('modul_model');
-		$this->load->model('header_model');
+		$this->load->model(['modul_model']);
 		$this->modul_ini = 11;
+		$this->sub_modul_ini = 42;
+		$this->list_session = ['status', 'cari', 'module'];
 	}
 
 	public function clear()
 	{
-		unset($_SESSION['cari']);
-		unset($_SESSION['filter']);
+		$this->session->unset_userdata($this->list_session);
 		redirect('modul');
 	}
 
 	public function index()
 	{
-		if (isset($_SESSION['filter']))
-			$data['filter'] = $_SESSION['filter'];
-		else $data['filter'] = '';
+		$id = $this->session->module;
 
-		$data['main'] = $this->modul_model->list_data();
-		$data['keyword'] = $this->modul_model->autocomplete();
-		$nav['act'] = 11;
-		$nav['act_sub'] = 42;
-		$header = $this->header_model->get_data();
+		if (!$id)
+		{
+			foreach ($this->list_session as $list)
+			{
+				$data[$list] = $this->session->$list ?: '';
+			}
 
-		$this->load->view('header', $header);
-		$this->load->view('nav', $nav);
-		$this->load->view('setting/modul/table', $data);
-		$this->load->view('footer');
+			$data['sub_modul'] = NULL;
+			$data['main'] = $this->modul_model->list_data();
+			$data['keyword'] = $this->modul_model->autocomplete();
+		}
+		else
+		{
+			$data['sub_modul'] = $this->modul_model->get_data($id);
+			$data['main'] = $this->modul_model->list_sub_modul($id);
+		}
+
+		$this->render('setting/modul/table', $data);
 	}
 
 	public function form($id = '')
 	{
+		$data['list_icon'] = $this->modul_model->list_icon();
 		if ($id)
 		{
 			$data['modul'] = $this->modul_model->get_data($id);
@@ -48,62 +96,44 @@ class Modul extends Admin_Controller {
 			$data['modul'] = NULL;
 			$data['form_action'] = site_url("modul/insert");
 		}
-		$header = $this->header_model->get_data();
-		$this->load->view('header', $header);
 
-		$nav['act'] = 11;
-		$nav['act_sub'] = 42;
-		$this->load->view('nav', $nav);
-		$this->load->view('setting/modul/form', $data);
-		$this->load->view('footer');
+		$this->render('setting/modul/form', $data);
 	}
 
 	public function sub_modul($id = '')
 	{
-		$data['submodul'] = $this->modul_model->list_sub_modul($id);
-		$data['modul'] = $this->modul_model->get_data($id);
-		$header = $this->header_model->get_data();
-		$nav['act'] = 11;
-		$nav['act_sub'] = 42;
+		$this->session->module = $id;
 
-		$this->load->view('header', $header);
-		$this->load->view('nav', $nav);
-		$this->load->view('setting/modul/sub_modul_table', $data);
-		$this->load->view('footer');
-	}
-
-	public function filter()
-	{
-		$filter = $this->input->post('filter');
-		if ($filter != "")
-			$_SESSION['filter'] = $filter;
-		else unset($_SESSION['filter']);
 		redirect('modul');
 	}
 
-	public function search()
+	public function filter($filter)
 	{
-		$cari = $this->input->post('cari');
-		if ($cari != '')
-			$_SESSION['cari'] = $cari;
-		else unset($_SESSION['cari']);
+		$value = $this->input->post($filter);
+		if ($value != '')
+			$this->session->$filter = $value;
+		else $this->session->unset_userdata($filter);
 		redirect('modul');
 	}
 
 	public function update($id = '')
 	{
 		$this->modul_model->update($id);
-		if ($_POST['parent'] == 0)
+		$parent = $this->input->post('parent');
+		if ($parent == 0)
 			redirect("modul");
 		else
-		{
-			redirect("modul/sub_modul/$_POST[parent]");
-		}
+			redirect("modul/sub_modul/$parent");
+	}
+
+	public function lock($id = 0, $val = 1)
+	{
+		$this->modul_model->lock($id, $val);
+		redirect($_SERVER['HTTP_REFERER']);
 	}
 
 	public function ubah_server()
 	{
-		$this->load->model('setting_model');
 		$this->setting_model->update_penggunaan_server();
 		redirect('modul');
 	}
@@ -111,6 +141,6 @@ class Modul extends Admin_Controller {
 	public function default_server()
 	{
 		$this->modul_model->default_server();
-		redirect('modul');
+		$this->clear();
 	}
 }

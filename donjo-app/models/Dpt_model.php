@@ -3,14 +3,12 @@
 	public function __construct()
 	{
 		parent::__construct();
-
 		$this->load->model('keluarga_model');
 	}
 
 	public function autocomplete()
 	{
-		$str = autocomplete_str('nama', 'tweb_penduduk');
-		return $str;
+		return $this->autocomplete_str('nama', 'tweb_penduduk');
 	}
 
 	private function cacatx_sql()
@@ -145,13 +143,15 @@
 
 		$sql .= $this->syarat_dpt_sql();
 		$sql .= $this->search_sql();
-		$sql .= $this->filter_sql();
-		$sql .= $this->sex_sql();
 		$sql .= $this->dusun_sql();
 		$sql .= $this->rw_sql();
 		$sql .= $this->rt_sql();
 
 		$kolom_kode = array(
+			array('filter', 'u.status'), // Status : Hidup, Mati, Dll -> Load data awal (filtering combobox)
+			array('status_penduduk', 'u.status'), // Status : Hidup, Mati, Dll -> Hanya u/ Pencarian Spesifik
+			array('status_dasar', 'u.status_dasar'), // Kode 6
+			array('sex', 'u.sex'), // Kode 4
 			array('cacat','cacat_id'),
 			array('cara_kb_id','cara_kb_id'),
 			array('menahun','sakit_menahun_id'),
@@ -180,7 +180,8 @@
 		return $sql;
 	}
 
-	public function list_data($o=0, $offset=0, $limit=500)
+	// $limit = 0 mengambil semua
+	public function list_data($o = 0, $offset = 0, $limit = 0)
 	{
 		$tanggal_pemilihan = $this->tanggal_pemilihan();
 		$select_sql = "SELECT DISTINCT u.id,u.nik,u.tanggallahir,u.tempatlahir,u.status,u.status_dasar,u.id_kk,u.nama,u.nama_ayah,u.nama_ibu,a.dusun,a.rw,a.rt,d.alamat,d.no_kk AS no_kk,
@@ -208,7 +209,7 @@
 		}
 
 		//Paging SQL
-		$paging_sql = ' LIMIT ' .$offset. ',' .$limit;
+		$paging_sql = $limit > 0 ? ' LIMIT ' . $offset . ',' . $limit : '';
 
 		$sql .= $order_sql;
 		$sql .= $paging_sql;

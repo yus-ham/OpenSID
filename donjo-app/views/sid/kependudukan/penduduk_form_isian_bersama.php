@@ -87,7 +87,7 @@
 	{
 		$('#isi_rt').show();
 		var rt = $('#id_cluster');
-		var params = urlencode(dusun) + '/' + rw;
+		var params = urlencode(dusun) + '/' + urlencode(rw);
 		select_options(rt, params);
 	}
 </script>
@@ -103,7 +103,7 @@
 				<div class='col-sm-8'>
 					<div class='form-group'>
 						<label for="nama">Nama Lengkap <code> (Tanpa Gelar) </code> </label>
-						<input id="nama" name="nama" class="form-control input-sm required" type="text" placeholder="Nama Lengkap" value="<?= strtoupper($penduduk['nama'])?>"></input>
+						<input id="nama" name="nama" class="form-control input-sm required nama" maxlength="100" type="text" placeholder="Nama Lengkap" value="<?= strtoupper($penduduk['nama'])?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-12'>
@@ -150,7 +150,7 @@
 				<div class='col-sm-4'>
 					<div class='form-group'>
 						<label for="no_kk_sebelumnya">Nomor KK Sebelumnya</label>
-						<input id="no_kk_sebelumnya" name="no_kk_sebelumnya" class="form-control input-sm" type="text" placeholder="No KK Sebelumnya" value="<?= strtoupper($penduduk['no_kk_sebelumnya'])?>"></input>
+						<input id="no_kk_sebelumnya" name="no_kk_sebelumnya" class="form-control input-sm nik" maxlength="30" type="text" placeholder="No KK Sebelumnya" value="<?= strtoupper($penduduk['no_kk_sebelumnya'])?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-4'>
@@ -159,7 +159,7 @@
 							<input type="hidden" name="kk_level_lama" value="<?= $penduduk['kk_level']?>">
 						<?php endif; ?>
 						<label for="kk_level">Hubungan Dalam Keluarga</label>
-						<select class="form-control input-sm" name="kk_level">
+						<select class="form-control input-sm <?= ( ! $id_kk) ?: 'required'; ?>" name="kk_level">
 							<option value="">Pilih Hubungan Keluarga</option>
 							<?php foreach ($hubungan as $data): ?>
 								<option value="<?= $data['id']?>"<?php selected($penduduk['kk_level'], $data['id']); ?>><?= strtoupper($data['nama'])?></option>
@@ -191,10 +191,11 @@
 				<div class='col-sm-5'>
 					<div class='form-group'>
 						<label for="status">Status Penduduk </label>
-						<select class="form-control input-sm required" name="status">
-							<option value="1" <?php if ($penduduk['status'] == "TETAP" OR $penduduk['status'] == "1" OR $penduduk['status'] == ""): ?>selected<?php endif; ?>>Tetap</option>
-							<option value="2" <?php if ($penduduk['status'] == "TIDAK AKTIF" OR $penduduk['status'] == "2"): ?>selected<?php endif; ?>>Tidak Tetap</option>
-							<option value="3" <?php if ($penduduk['status'] == "PENDATANG" OR $penduduk['status'] == "3"): ?>selected<?php endif; ?> >Pendatang</option>
+						<select class="form-control input-sm required" name="status" <?php ($penduduk['no_kk']) and print('disabled') ?>>
+							<option value="">Pilih Status Penduduk</option>
+							<?php foreach ($status_penduduk as $data): ?>
+								<option value="<?= $data['id']?>" <?php selected($penduduk['id_status'], $data['id']); ?>><?= strtoupper($data['nama'])?></option>
+							<?php endforeach;?>
 						</select>
 					</div>
 				</div>
@@ -206,13 +207,13 @@
 				<div class='col-sm-4'>
 					<div class='form-group'>
 						<label for="akta_lahir">Nomor Akta Kelahiran </label>
-						<input id="akta_lahir" name="akta_lahir" class="form-control input-sm" type="text" placeholder="Nomor Akta Kelahiran" value="<?= $penduduk['akta_lahir']?>"></input>
+						<input id="akta_lahir" name="akta_lahir" class="form-control input-sm nomor_sk" type="text" maxlength="40" placeholder="Nomor Akta Kelahiran" value="<?= $penduduk['akta_lahir']?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-8'>
 					<div class='form-group'>
 						<label for="tempatlahir">Tempat Lahir</label>
-						<input id="tempatlahir" name="tempatlahir" class="form-control input-sm" type="text" placeholder="Tempat Lahir" value="<?= strtoupper($penduduk['tempatlahir'])?>"></input>
+						<input id="tempatlahir" name="tempatlahir" class="form-control input-sm" maxlength="100" type="text" placeholder="Tempat Lahir" value="<?= strtoupper($penduduk['tempatlahir'])?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-4'>
@@ -264,7 +265,7 @@
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="kelahiran_anak_ke">Anak Ke <code>(Isi dengan angka)</code></label>
-								<input id="kelahiran_anak_ke" name="kelahiran_anak_ke" class="form-control input-sm" type="text" placeholder="Anak Ke" value="<?= strtoupper($penduduk['kelahiran_anak_ke'])?>"></input>
+								<input id="kelahiran_anak_ke" name="kelahiran_anak_ke" class="form-control input-sm number" maxlength="2" type="text" placeholder="Anak Ke" value="<?= strtoupper($penduduk['kelahiran_anak_ke'])?>"></input>
 							</div>
 						</div>
 						<div class='col-sm-4'>
@@ -285,13 +286,13 @@
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="berat_lahir">Berat Lahir <code>( Gram )</code></label>
-								<input id="berat_lahir" name="berat_lahir" class="form-control input-sm" type="text" placeholder="Berat Lahir" value="<?= strtoupper($penduduk['berat_lahir'])?>"></input>
+								<input id="berat_lahir" name="berat_lahir" class="form-control input-sm number" maxlength="6" type="text" placeholder="Berat Lahir" value="<?= strtoupper($penduduk['berat_lahir'])?>"></input>
 							</div>
 						</div>
 						<div class='col-sm-4'>
 							<div class='form-group'>
 								<label for="panjang_lahir">Panjang Lahir <code>( cm )</code></label>
-								<input id="panjang_lahir" name="panjang_lahir" class="form-control input-sm" type="text" placeholder="Panjang Lahir" value="<?= strtoupper($penduduk['panjang_lahir'])?>"></input>
+								<input id="panjang_lahir" name="panjang_lahir" class="form-control input-sm number" maxlength="3" type="text" placeholder="Panjang Lahir" value="<?= strtoupper($penduduk['panjang_lahir'])?>"></input>
 							</div>
 						</div>
 					</div>
@@ -353,7 +354,7 @@
 				<div class='col-sm-8'>
 					<div class='form-group'>
 						<label for="dokumen_pasport">Nomor Paspor </label>
-						<input id="dokumen_pasport"  name="dokumen_pasport" class="form-control input-sm" type="text" placeholder="Nomor Paspor" value="<?= strtoupper($penduduk['dokumen_pasport'])?>"></input>
+						<input id="dokumen_pasport"  name="dokumen_pasport" class="form-control input-sm nomor_sk" maxlength="45" type="text" placeholder="Nomor Paspor" value="<?= strtoupper($penduduk['dokumen_pasport'])?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-4'>
@@ -370,7 +371,7 @@
 				<div class='col-sm-8'>
 					<div class='form-group'>
 						<label for="dokumen_kitas">Nomor KITAS/KITAP </label>
-						<input id="dokumen_kitas"  name="dokumen_kitas" class="form-control input-sm" type="text" placeholder="Nomor KITAS/KITAP" value="<?= strtoupper($penduduk['dokumen_kitas'])?>"></input>
+						<input id="dokumen_kitas"  name="dokumen_kitas" class="form-control input-sm number" maxlength="10" type="text" placeholder="Nomor KITAS/KITAP" value="<?= strtoupper($penduduk['dokumen_kitas'])?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-12'>
@@ -389,7 +390,7 @@
 						<div class='col-sm-8'>
 							<div class='form-group'>
 								<label for="nama_ayah">Nama Ayah </label>
-								<input id="nama_ayah" name="nama_ayah" class="form-control input-sm" type="text" placeholder="Nama Ayah" value="<?= strtoupper($penduduk['nama_ayah'])?>"></input>
+								<input id="nama_ayah" name="nama_ayah" class="form-control input-sm nama" maxlength="100" type="text" placeholder="Nama Ayah" value="<?= strtoupper($penduduk['nama_ayah'])?>"></input>
 							</div>
 						</div>
 					</div>
@@ -403,7 +404,7 @@
 				<div class='col-sm-8'>
 					<div class='form-group'>
 						<label for="nama_ibu">Nama Ibu </label>
-						<input id="nama_ibu" name="nama_ibu" class="form-control input-sm" type="text" placeholder="Nama Ibu"  value="<?= strtoupper($penduduk['nama_ibu'])?>"></input>
+						<input id="nama_ibu" name="nama_ibu" class="form-control input-sm nama" maxlength="100" type="text" placeholder="Nama Ibu"  value="<?= strtoupper($penduduk['nama_ibu'])?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-12'>
@@ -415,7 +416,7 @@
 					<div class='col-sm-12'>
 						<div class='form-group'>
 							<label for="telepon">Alamat KK </label>
-							<input id="alamat"  name="alamat"  class="form-control input-sm" type="text" placeholder="Alamat di Kartu Keluarga" size="20" value="<?= $penduduk['alamat']?>"></input>
+							<input id="alamat"  name="alamat"  class="form-control input-sm" maxlength="200" ype="text" placeholder="Alamat di Kartu Keluarga" size="20" value="<?= $penduduk['alamat']?>"></input>
 						</div>
 					</div>
 				<?php endif; ?>
@@ -468,7 +469,11 @@
 				<div class='col-sm-4'>
 					<div class='form-group'>
 						<label for="lokasi">Lokasi Tempat Tinggal </label>
-						<a href="<?=site_url("penduduk/ajax_penduduk_maps/$p/$o/$penduduk[id]/1")?>" title="Lokasi <?= $penduduk['nama']?>" class="btn btn-social btn-flat bg-navy btn-sm"><i class='fa fa-map-marker'></i> Cari Lokasi Tempat Tinggal</a>
+						<div class='row'>
+							<div class='col-sm-12'>
+								<a href="<?=site_url("penduduk/ajax_penduduk_maps/$p/$o/$penduduk[id]/1")?>" title="Lokasi <?= $penduduk['nama']?>" class="btn btn-social btn-flat bg-navy btn-sm"><i class='fa fa-map-marker'></i> Cari Lokasi Tempat Tinggal</a>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class='col-sm-12'>
@@ -477,17 +482,23 @@
 						<input id="telepon"  name="telepon"  class="form-control input-sm" type="text" placeholder="Nomor Telepon" size="20" value="<?= $penduduk['telepon']?>"></input>
 					</div>
 				</div>
+					<div class='col-sm-12'>
+					<div class='form-group'>
+						<label for="email"> Alamat Email </label>
+						<input id="email"  name="email"  class="form-control input-sm email" maxlength="50" placeholder="Alamat Email" size="20" value="<?= $penduduk['email']?>"></input>
+					</div>
+				</div>
 				<div class='col-sm-12'>
 					<div class='form-group'>
 						<label for="alamat_sebelumnya">Alamat Sebelumnya </label>
-						<input id="alamat_sebelumnya" name="alamat_sebelumnya" class="form-control input-sm" type="text" placeholder="Alamat Sebelumnya" value="<?= strtoupper($penduduk['alamat_sebelumnya'])?>"></input>
+						<input id="alamat_sebelumnya" name="alamat_sebelumnya" class="form-control input-sm" maxlength="200" type="text" placeholder="Alamat Sebelumnya" value="<?= strtoupper($penduduk['alamat_sebelumnya'])?>"></input>
 					</div>
 				</div>
 				<?php if (!$penduduk['no_kk'] and !$kk_baru): ?>
 					<div class='col-sm-12'>
 						<div class='form-group'>
 							<label for="alamat_sekarang">Alamat Sekarang </label>
-							<input id="alamat_sekarang" name="alamat_sekarang" class="form-control input-sm" type="text" placeholder="Alamat Sekarang" value="<?= strtoupper($penduduk['alamat_sekarang'])?>"></input>
+							<input id="alamat_sekarang" name="alamat_sekarang" class="form-control input-sm" maxlength="200" type="text" placeholder="Alamat Sekarang" value="<?= strtoupper($penduduk['alamat_sekarang'])?>"></input>
 						</div>
 					</div>
 				<?php endif; ?>
@@ -516,7 +527,7 @@
 						<?php else: ?>
 							<label for="akta_perkawinan">No. Akta Perkawinan </label>
 						<?php endif; ?>
-							<input id="akta_perkawinan" name="akta_perkawinan" class="form-control input-sm" type="text" placeholder="Nomor Akta Perkawinan" value="<?= $penduduk['akta_perkawinan']?>"></input>
+							<input id="akta_perkawinan" name="akta_perkawinan" class="form-control input-sm nomor_sk" type="text" maxlength="40" placeholder="Nomor Akta Perkawinan" value="<?= $penduduk['akta_perkawinan']?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-4'>
@@ -533,7 +544,7 @@
 				<div class='col-sm-8'>
 					<div class='form-group'>
 						<label for="akta_perceraian">Akta Perceraian </label>
-						<input id="akta_perceraian" name="akta_perceraian" class="form-control input-sm" type="text" placeholder="Akta Perceraian" value="<?= strtoupper($penduduk['akta_perceraian'])?>"></input>
+						<input id="akta_perceraian" name="akta_perceraian" class="form-control input-sm nomor_sk" maxlength="40" type="text" placeholder="Akta Perceraian" value="<?= strtoupper($penduduk['akta_perceraian'])?>"></input>
 					</div>
 				</div>
 				<div class='col-sm-4'>

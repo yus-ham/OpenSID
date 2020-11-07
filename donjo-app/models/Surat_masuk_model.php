@@ -1,4 +1,52 @@
-<?php class Surat_masuk_model extends CI_Model {
+<?php
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/**
+ * File ini:
+ *
+ * Model untuk modul Surat Masuk
+ *
+ * donjo-app/models/Surat_masuk_model.php
+ *
+ */
+
+/**
+ *
+ * File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package	OpenSID
+ * @author	Tim Pengembang OpenDesa
+ * @copyright	Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright	Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license	http://www.gnu.org/licenses/gpl.html	GPL V3
+ * @link 	https://github.com/OpenSID/OpenSID
+ */
+
+	class Surat_masuk_model extends MY_Model {
+
   // Konfigurasi untuk library 'upload'
   protected $uploadConfig = array();
 
@@ -21,8 +69,7 @@
 	public function autocomplete()
 	{
 		// TODO: tambahkan kata2 dari isi_singkat
-		$str = autocomplete_str('pengirim', 'surat_masuk');
-		return $str;
+		return $this->autocomplete_str('pengirim', 'surat_masuk');
 	}
 
 	private function search_sql()
@@ -134,9 +181,7 @@
 		// hapus data disposisi dari post
 		// surat masuk
 		unset($data['disposisi_kepada']);
-		// Normalkan tanggal
-		$data['tanggal_penerimaan'] = tgl_indo_in($data['tanggal_penerimaan']);
-		$data['tanggal_surat'] = tgl_indo_in($data['tanggal_surat']);
+		$this->validasi_surat_masuk($data);
 
 		// Adakah lampiran yang disertakan?
 		$adaLampiran = !empty($_FILES['satuan']['name']);
@@ -198,7 +243,7 @@
 		$insert_id = $this->db->insert_id();
 
 		// insert ke tabel disposisi surat masuk
-		$this->insert_disposisi_surat_masuk($insert_id, $jabatan);
+		if ($jabatan) $this->insert_disposisi_surat_masuk($insert_id, $jabatan);
 
 		// transaction selesai
 		$this->db->trans_complete();
@@ -206,6 +251,18 @@
 		// Set session berdasarkan hasil operasi
 		$_SESSION['success'] = $indikatorSukses ? 1 : -1;
 		$_SESSION['error_msg'] = $_SESSION['success'] === 1 ? NULL : ' -> '.$uploadError;
+	}
+
+	private function validasi_surat_masuk(&$data)
+	{
+		// Normalkan tanggal
+		$data['tanggal_penerimaan'] = tgl_indo_in($data['tanggal_penerimaan']);
+		$data['tanggal_surat'] = tgl_indo_in($data['tanggal_surat']);
+		// Bersihkan data
+		$data['nomor_surat'] = strip_tags($data['nomor_surat']);
+		$data['pengirim'] = alfanumerik_spasi($data['pengirim']);
+		$data['isi_singkat'] = strip_tags($data['isi_singkat']);
+		$data['isi_disposisi'] = strip_tags($data['isi_disposisi']);
 	}
 
 	/**
@@ -229,9 +286,7 @@
 
 		$_SESSION['error_msg'] = NULL;
 
-		// Normalkan tanggal
-		$data['tanggal_penerimaan'] = tgl_indo_in($data['tanggal_penerimaan']);
-		$data['tanggal_surat'] = tgl_indo_in($data['tanggal_surat']);
+		$this->validasi_surat_masuk($data);
 
 		// Ambil nama berkas scan lama dari database
 		$berkasLama = $this->getNamaBerkasScan($idSuratMasuk);
@@ -365,8 +420,13 @@
 	 * @param   string  $idSuratMasuk  Id surat masuk
 	 * @return  void
 	 */
-	public function delete($idSuratMasuk)
+	public function delete($idSuratMasuk, $semua=false)
 	{
+		if (!$semua)
+		{
+			$this->session->success = 1;
+			$this->session->error_msg = '';
+		}
 		// Type check
 		$idSuratMasuk = is_string($idSuratMasuk) ? $idSuratMasuk : strval($idSuratMasuk);
 		// Redirect ke halaman surat masuk jika Id kosong
@@ -413,13 +473,13 @@
 
 	public function delete_all()
 	{
+		$this->session->success = 1;
+		$this->session->error_msg = '';
+
 		$id_cb = $_POST['id_cb'];
-		if (count($id_cb))
+		foreach ($id_cb as $id)
 		{
-			foreach ($id_cb as $id)
-			{
-				$this->delete($id);
-			}
+			$this->delete($id, $semua=true);
 		}
 	}
 
@@ -500,10 +560,13 @@
 		return $query;
 	}
 
-	public function delete_disposisi_surat($id_surat_masuk)
+	public function delete_disposisi_surat($id_surat_masuk, $semua=false)
 	{
-		$this->db->where('id_surat_masuk', $id_surat_masuk);
-		$this->db->delete('disposisi_surat_masuk');
+		if (!$semua) $this->session->success = 1;
+
+		$outp = $this->db->where('id_surat_masuk', $id_surat_masuk)->delete('disposisi_surat_masuk');
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 }

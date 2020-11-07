@@ -84,19 +84,19 @@
 								<label class="col-sm-4 control-label" for="pamong_nik">Nomor Induk Kependudukan</label>
 								<div class="col-sm-7">
 									<input class="form-control input-sm pengurus-desa" type="text" placeholder="Nomor Induk Kependudukan" value="<?=$individu['nik']?>" disabled="disabled"></input>
-									<input id="pamong_nik" name="pamong_nik" class="form-control input-sm pengurus-luar-desa digits" type="text" placeholder="Nomor Induk Kependudukan" value="<?=$pamong['pamong_nik']?>" style="display: none;"></input>
+									<input id="pamong_nik" name="pamong_nik" class="form-control input-sm pengurus-luar-desa nik" type="text" maxlength="16" placeholder="Nomor Induk Kependudukan" value="<?=$pamong['pamong_nik']?>" style="display: none;"></input>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-4 control-label" for="pamong_niap">NIAP</label>
+								<label class="col-sm-4 control-label" for="pamong_niap"><?= $this->setting->sebutan_nip_desa ?></label>
 								<div class="col-sm-7">
-									<input id="pamong_niap" name="pamong_niap" class="form-control input-sm digits" type="text" placeholder="NIAP" value="<?=$pamong['pamong_niap']?>" ></input>
+									<input id="pamong_niap" name="pamong_niap" class="form-control input-sm digits" type="text" maxlength="25" placeholder="<?= $this->setting->sebutan_nip_desa ?>" value="<?=$pamong['pamong_niap']?>" ></input>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-4 control-label" for="pamong_nip">NIP</label>
 								<div class="col-sm-7">
-									<input id="pamong_nip" name="pamong_nip" class="form-control input-sm digits" type="text" placeholder="NIP" value="<?=$pamong['pamong_nip']?>" ></input>
+									<input id="pamong_nip" name="pamong_nip" class="form-control input-sm digits" type="text" maxlength="20" placeholder="NIP" value="<?=$pamong['pamong_nip']?>" ></input>
 								</div>
 							</div>
 							<div class="form-group">
@@ -162,7 +162,7 @@
 							<div class="form-group">
 								<label class="col-sm-4 control-label" for="pamong_nosk">Nomor SK Pengangkatan</label>
 								<div class="col-sm-7">
-									<input name="pamong_nosk" class="form-control input-sm" type="text" placeholder="Nomor SK Pengangkatan" value="<?= $pamong['pamong_nosk']?>" ></input>
+									<input name="pamong_nosk" class="form-control input-sm" type="text" maxlength="30" placeholder="Nomor SK Pengangkatan" value="<?= $pamong['pamong_nosk']?>" ></input>
 								</div>
 							</div>
 							<div class='form-group'>

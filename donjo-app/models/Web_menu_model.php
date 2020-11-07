@@ -1,16 +1,64 @@
 <?php
 
-class Web_menu_model extends CI_Model {
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/**
+ * File ini:
+ *
+ * Model untuk modul Menu
+ *
+ * donjo-app/models/Web_menu_model.php
+ *
+ */
+
+/**
+ *
+ * File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package	OpenSID
+ * @author	Tim Pengembang OpenDesa
+ * @copyright	Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright	Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license	http://www.gnu.org/licenses/gpl.html	GPL V3
+ * @link 	https://github.com/OpenSID/OpenSID
+ */
+
+class Web_menu_model extends MY_Model {
+
+	private $urut_model;
 
 	public function __construct()
 	{
 		parent::__construct();
+		require_once APPPATH.'/models/Urut_model.php';
+		$this->urut_model = new Urut_Model('menu');
 	}
 
-	public function autocomplete()
+	public function autocomplete($cari = '')
 	{
-		$str = autocomplete_str('nama', 'menu');
-		return $str;
+		return $this->autocomplete_str('nama', 'menu', $cari);
 	}
 
 	private function search_sql($tip)
@@ -21,6 +69,7 @@ class Web_menu_model extends CI_Model {
 			$kw = $this->db->escape_like_str($cari);
 			$kw = '%' .$kw. '%';
 			$search_sql = " AND (nama LIKE '$kw')";
+
 			return $search_sql;
 		}
 	}
@@ -31,6 +80,7 @@ class Web_menu_model extends CI_Model {
 		{
 			$kf = $_SESSION['filter'];
 			$filter_sql = " AND enabled = $kf";
+
 			return $filter_sql;
 		}
 	}
@@ -56,6 +106,7 @@ class Web_menu_model extends CI_Model {
 		$sql = " FROM menu WHERE tipe = ? ";
 		$sql .= $this->search_sql($tip);
 		$sql .= $this->filter_sql();
+
 		return $sql;
 	}
 
@@ -82,75 +133,79 @@ class Web_menu_model extends CI_Model {
 		for ($i=0; $i<count($data); $i++)
 		{
 			$data[$i]['no'] = $j + 1;
-
-			if ($data[$i]['enabled'] == 1)
-				$data[$i]['aktif'] = "Ya";
-			else
-				$data[$i]['aktif'] = "Tidak";
+			if ($data[$i]['link_tipe'] != 99) $data[$i]['link'] = $this->menu_slug($data[$i]['link']);
 
 			$j++;
 		}
+
 		return $data;
 	}
 
 	public function insert($tip=1)
 	{
-		$data = $_POST;
+		$post = $this->input->post();
 		$data['tipe'] = $tip;
-		$data['urut'] = $this->urut_max($tip) + 1;
-		$data['nama'] = strip_tags($data['nama']);
-		$outp = $this->db->insert('menu',$data);
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		$data['urut'] = $this->urut_model->urut_max(array('tipe' => $tip)) + 1;
+		$data['nama'] = htmlentities($post['nama']);
+		$data['link'] = $post['link'];
+		$data['link_tipe'] = $post['link_tipe'];
 
+		$outp = $this->db->insert('menu', $data);
+
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function update($id=0)
 	{
-		$data = $_POST;
-		$data['nama'] = strip_tags($data['nama']);
+		$post = $this->input->post();
+		$data['nama'] = htmlentities($post['nama']);
+		$data['link'] = $post['link'];
 		if ($data['link']=="")
 			UNSET($data['link']);
 
+		$data['link_tipe'] = $post['link_tipe'];
+
 		$this->db->where('id', $id);
 		$outp = $this->db->update('menu', $data);
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
-	public function delete($id='')
+	public function delete($id='', $semua=false)
 	{
-		$sql = "DELETE FROM menu WHERE id = ? OR parrent = ?";
-		$outp = $this->db->query($sql, array($id, $id));
+		if (!$semua) $this->session->success = 1;
 
-		if (!$outp) $_SESSION['success'] = -1;
+		$outp = $this->db->where('id', $id)->or_where('parrent', $id)->delete('menu');
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 	public function delete_all()
 	{
+		$this->session->success = 1;
+
 		$id_cb = $_POST['id_cb'];
 		foreach ($id_cb as $id)
 		{
-			$this->delete($id);
+			$this->delete($id, $semua=true);
 		}
 	}
 
 	public function list_sub_menu($menu=1)
 	{
-		$sql = "SELECT * FROM menu WHERE parrent = ? AND tipe = 3 ORDER BY urut";
-
-		$query = $this->db->query($sql, $menu);
-		$data = $query->result_array();
+		$data = $this->db->select('*')
+			->from('menu')
+			->where('parrent', $menu)
+			->where('tipe', 3)
+			->order_by('urut')
+			->get()->result_array();
 
 		for ($i=0; $i<count($data); $i++)
 		{
 			$data[$i]['no'] = $i + 1;
-
-			if ($data[$i]['enabled'] == 1)
-				$data[$i]['aktif'] = "Ya";
-			else
-				$data[$i]['aktif'] = "Tidak";
+			if ($data[$i]['link_tipe'] != 99) $data[$i]['link'] = $this->menu_slug($data[$i]['link']);
 		}
+
 		return $data;
 	}
 
@@ -166,23 +221,32 @@ class Web_menu_model extends CI_Model {
 		{
 			$data[$i]['no'] = $i + 1;
 		}
+
 		return $data;
 	}
 
 	public function insert_sub_menu($menu=0)
 	{
-		$data = $_POST;
+		$post = $this->input->post();
+		$data = [];
 		$data['parrent'] = $menu;
 		$data['tipe'] = 3;
-		$data['urut'] = $this->urut_max(3, $menu) + 1;
+		$data['urut'] = $this->urut_model->urut_max(array('tipe' => 3, 'parrent' => $menu)) + 1;
+		$data['nama'] = htmlentities($post['nama']);
+		$data['link'] = $post['link'];
+		$data['link_tipe'] = $post['link_tipe'];
 		$outp = $this->db->insert('menu', $data);
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function update_sub_menu($id=0)
 	{
-		$data = $_POST;
+		$post = $this->input->post();
+		$data = [];
+		$data['nama'] = htmlentities($post['nama']);
+		$data['link'] = $post['link'];
+		$data['link_tipe'] = $post['link_tipe'];
 		if ($data['link'] == "")
 		{
 			UNSET($data['link']);
@@ -190,35 +254,27 @@ class Web_menu_model extends CI_Model {
 
 		$this->db->where('id', $id);
 		$outp = $this->db->update('menu', $data);
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
-	public function delete_sub_menu($id='')
+	public function delete_sub_menu($id='', $semua=false)
 	{
-		$sql = "DELETE FROM menu WHERE id = ?";
-		$outp = $this->db->query($sql, array($id));
+		if (!$semua) $this->session->success = 1;
 
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		$outp = $this->db->where('id', $id)->delete('menu');
+
+		status_sukses($outp, $gagal_saja=true); //Tampilkan Pesan
 	}
 
 	public function delete_all_sub_menu()
 	{
+		$this->session->success = 1;
+
 		$id_cb = $_POST['id_cb'];
-
-		if (count($id_cb))
+		foreach ($id_cb as $id)
 		{
-			foreach ($id_cb as $id)
-			{
-				$sql = "DELETE FROM menu WHERE id = ?";
-				$outp = $this->db->query($sql, array($id));
-			}
+			$this->delete_sub_menu($id, $semua=true);
 		}
-		else $outp = false;
-
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
 	}
 
 	public function menu_lock($id='',$val=0)
@@ -226,8 +282,7 @@ class Web_menu_model extends CI_Model {
 		$sql = "UPDATE menu SET enabled = ? WHERE id = ?";
 		$outp = $this->db->query($sql, array($val, $id));
 
-		if ($outp) $_SESSION['success'] = 1;
-		else $_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function get_menu($id=0)
@@ -238,110 +293,23 @@ class Web_menu_model extends CI_Model {
 		return $data;
 	}
 
-  private function urut_max($tipe, $menu='')
-  {
-    $this->db->select_max('urut');
-    if ($menu != '')
-	    $this->db->where(array('tipe' => 3, 'parrent' => $menu));
-	  else
-	    $this->db->where('tipe', $tipe);
-    $query = $this->db->get('menu');
-    $menu = $query->row_array();
-    return $menu['urut'];
-  }
-
-	private function urut_semua($tipe, $menu)
-	{
-		if ($menu != '')
-		{
-			$sql = "SELECT urut, COUNT(*) c
-				FROM menu WHERE tipe = 3 AND parrent = ?
-				GROUP BY urut HAVING c > 1";
-			$query = $this->db->query($sql, $menu);
-			$urut_duplikat = $query->result_array();
-			$belum_diurut = $this->db->
-				where('tipe', 3)->
-				where('parrent', $menu)->
-				where('urut IS NULL')->
-				limit(1)->get('menu')->row_array();
-			if ($urut_duplikat OR $belum_diurut)
-			{
-				$q = $this->db->select("id")
-					->where("tipe", 3)
-					->where('parrent', $menu)
-					->order_by("urut")
-					->get('menu');
-				$menus = $q->result_array();
-			}
-		}
-		else
-		{
-			$sql = "SELECT urut, COUNT(*) c
-				FROM menu WHERE tipe = ?
-				GROUP BY urut HAVING c > 1";
-			$query = $this->db->query($sql, $tipe);
-			$urut_duplikat = $query->result_array();
-			$belum_diurut = $this->db->
-				where('tipe', $tipe)->
-				where('urut IS NULL')->
-				limit(1)->get('menu')->row_array();
-			if ($urut_duplikat OR $belum_diurut)
-			{
-				$q = $this->db->select("id")
-					->where("tipe", $tipe)
-					->order_by("urut")
-					->get('menu');
-				$menus = $q->result_array();
-			}
-		}
-		for ($i=0; $i<count($menus); $i++)
-		{
-			$this->db->where('id', $menus[$i]['id']);
-			$data['urut'] = $i + 1;
-			$this->db->update('menu', $data);
-		}
-	}
-
 	// $arah:
 	//		1 - turun
 	// 		2 - naik
 	public function urut($id, $arah, $tipe=1, $menu='')
 	{
-		$this->urut_semua($tipe, $menu);
-		$this->db->where('id', $id);
-		$q = $this->db->get('menu');
-		$menu1 = $q->row_array();
+		$subset = !empty($menu) ? array("tipe" => 3, "parrent" => $menu) : array("tipe" => $tipe);
+		$this->urut_model->urut($id, $arah, $subset);
+	}
 
-		$this->db->select("id, urut");
-		if ($menu != '')
-			$this->db->where(array("tipe" => 3, "parrent" => $menu));
-		else
-			$this->db->where("tipe", $tipe);
-		$this->db->order_by("urut");
-		$q = $this->db->get('menu');
-		$menus = $q->result_array();
-		for ($i=0; $i<count($menus); $i++)
-		{
-			if ($menus[$i]['id'] == $id)
-				break;
-		}
+	public function menu_aktif($link)
+	{
+		$ada_menu = $this->db->where('link', $link)
+			->where('enabled', 1)
+			->get('menu')
+			->num_rows();
 
-		if ($arah == 1)
-		{
-			if ($i >= count($menus) - 1) return;
-			$menu2 = $menus[$i + 1];
-		}
-		if ($arah == 2)
-		{
-			if ($i <= 0) return;
-			$menu2 = $menus[$i - 1];
-		}
-
-		// Tukar urutan
-		$this->db->where('id', $menu2['id'])->
-			update('menu', array('urut' => $menu1['urut']));
-		$this->db->where('id', $menu1['id'])->
-			update('menu', array('urut' => $menu2['urut']));
+		return $ada_menu;
 	}
 
 }

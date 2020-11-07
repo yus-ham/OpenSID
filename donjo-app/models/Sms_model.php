@@ -1,5 +1,48 @@
 <?php
-class Sms_model extends CI_Model {
+/**
+ * File ini:
+ *
+ * Model untuk modul SMS
+ *
+ * donjo-app/models/Sms_model.php
+ *
+ */
+
+/**
+ *
+ * File ini bagian dari:
+ *
+ * OpenSID
+ *
+ * Sistem informasi desa sumber terbuka untuk memajukan desa
+ *
+ * Aplikasi dan source code ini dirilis berdasarkan lisensi GPL V3
+ *
+ * Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ *
+ * Dengan ini diberikan izin, secara gratis, kepada siapa pun yang mendapatkan salinan
+ * dari perangkat lunak ini dan file dokumentasi terkait ("Aplikasi Ini"), untuk diperlakukan
+ * tanpa batasan, termasuk hak untuk menggunakan, menyalin, mengubah dan/atau mendistribusikan,
+ * asal tunduk pada syarat berikut:
+ *
+ * Pemberitahuan hak cipta di atas dan pemberitahuan izin ini harus disertakan dalam
+ * setiap salinan atau bagian penting Aplikasi Ini. Barang siapa yang menghapus atau menghilangkan
+ * pemberitahuan ini melanggar ketentuan lisensi Aplikasi Ini.
+ *
+ * PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT MAUPUN
+ * TERSIRAT. PENULIS ATAU PEMEGANG HAK CIPTA SAMA SEKALI TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN ATAU
+ * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
+ *
+ * @package OpenSID
+ * @author  Tim Pengembang OpenDesa
+ * @copyright Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
+ * @copyright Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
+ * @license http://www.gnu.org/licenses/gpl.html  GPL V3
+ * @link  https://github.com/OpenSID/OpenSID
+ */
+
+class Sms_model extends MY_Model {
 
 	public function __construct()
 	{
@@ -8,8 +51,7 @@ class Sms_model extends CI_Model {
 
 	public function autocomplete()
 	{
-		$str = autocomplete_str('SenderNumber', 'inbox');
-		return $str;
+		return $this->autocomplete_str('SenderNumber', 'inbox');
 	}
 
 	private function search_sql()
@@ -110,14 +152,13 @@ class Sms_model extends CI_Model {
 
 	public function insert_autoreply()
 	{
-		$data  = $_POST;
+		$post  = $this->input->post();
+		$data['autoreply_text'] = htmlentities($post['autoreply_text']);
 		$sql = "DELETE FROM setting_sms";
 		$query = $this->db->query($sql);
 		$outp = $this->db->insert('setting_sms', $data);
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
+
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function get_autoreply()
@@ -278,21 +319,17 @@ class Sms_model extends CI_Model {
 
 	public function insert()
 	{
-		$data = $_POST;
+		$post = $this->input->post();
+		$data['DestinationNumber'] = bilangan($post['DestinationNumber']);
+		$data['TextDecoded'] = htmlentities($post['TextDecoded']);
 		$outp = $this->db->insert('outbox', $data);
 
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function update($id = 0)
 	{
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function delete($Class = 0, $ID = '')
@@ -428,10 +465,7 @@ class Sms_model extends CI_Model {
 			}
 		}
 
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function list_grup()
@@ -523,7 +557,7 @@ class Sms_model extends CI_Model {
 		if (isset($_SESSION['pendidikan1']))
 		{
 			$kf = $_SESSION['pendidikan1'];
-			$pendidikan_sql = " AND u.pendidikan_id = $kf";
+			$pendidikan_sql = " AND u.pendidikan_kk_id = $kf";
 			return $pendidikan_sql;
 		}
 	}
@@ -543,7 +577,7 @@ class Sms_model extends CI_Model {
 		if (isset($_SESSION['grup1']))
 		{
 			$kf = $_SESSION['grup1'];
-			$grup_sql = " AND k.id IN (SELECT id_kontak FROM kontak_grup WHERE nama_grup = '$kf')";
+			$grup_sql = " AND k.id_kontak IN (SELECT id_kontak FROM anggota_grup_kontak WHERE id_grup = '$kf')";
 			return $grup_sql;
 		}
 	}
@@ -597,8 +631,10 @@ class Sms_model extends CI_Model {
 		foreach ($data as $hsl)
 		{
 			$no = $hsl['no_hp'];
-			$sqlku = "INSERT INTO outbox(DestinationNumber,TextDecoded) values('$no','$isi')";
-			$query = $this->db->query($sqlku);
+			$pesan = [];
+			$pesan['DestinationNumber'] = $no;
+			$pesan['TextDecoded'] = $isi;
+			$query = $this->db->insert('outbox', $pesan);
 		}
 	}
 
@@ -661,13 +697,17 @@ class Sms_model extends CI_Model {
 
 	public function insert_kontak()
 	{
-		$data = $_POST;
+		$post = $this->input->post();
+		$data['id_pend'] = $post['id_pend'];
+		$data['no_hp'] = bilangan($post['no_hp']);
 		$outp = $this->db->insert('kontak', $data);
 	}
 
 	public function update_kontak()
 	{
-		$data = $_POST;
+		$post = $this->input->post();
+		$data['id_kontak'] = $post['id_kontak'];
+		$data['no_hp'] = bilangan($post['no_hp']);
 		$outp = $this->db->where('id_kontak', $data['id_kontak'])->update('kontak', array(
 			'no_hp' => $data['no_hp']
 		));
@@ -690,10 +730,7 @@ class Sms_model extends CI_Model {
 		else
 			$outp = false;
 
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function paging_grup($p = 1, $o = 0)
@@ -743,14 +780,17 @@ class Sms_model extends CI_Model {
 
 	public function insert_grup()
 	{
-		$data['nama_grup'] = $_POST['nama_grup'];
+		$post = $this->input->post();
+		$data['nama_grup'] = htmlentities($post['nama_grup']);
 		$outp = $this->db->insert('kontak_grup', $data);
 	}
 
 	public function update_grup()
 	{
-		$nama_baru = $_POST['nama_grup'];
-		$sql = "UPDATE kontak_grup SET nama_grup = '$nama_baru' WHERE id_grup = $_POST[id_grup]";
+		$post = $this->input->post();
+		$id_grup = $post['id_grup'];
+		$nama_baru = htmlentities($post['nama_grup']);
+		$sql = "UPDATE kontak_grup SET nama_grup = '$nama_baru' WHERE id_grup = $id_grup";
 		$query = $this->db->query($sql);
 	}
 
@@ -864,10 +904,8 @@ class Sms_model extends CI_Model {
 		}
 		else
 			$outp = false;
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
+
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 	public function delete_anggota($id = 0)
@@ -890,143 +928,8 @@ class Sms_model extends CI_Model {
 		else
 			$outp = false;
 
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
-	}
-
-	public function paging_polling($p = 1, $o = 0)
-	{
-		$sql = "SELECT count(*) as jml " . $this->list_data_polling_sql();
-		$query = $this->db->query($sql);
-		$row = $query->row_array();
-		$jml_data = $row['jml'];
-
-		$this->load->library('paging');
-		$cfg['page'] = $p;
-		$cfg['per_page'] = $_SESSION['per_page'];
-		$cfg['num_rows'] = $jml_data;
-		$this->paging->init($cfg);
-
-		return $this->paging;
-	}
-
-	private function list_data_polling_sql()
-	{
-		$sql = " FROM polling a WHERE 1 ";
-		return $sql;
-	}
-
-	public function list_data_polling($o = 0, $offset = 0, $limit = 500)
-	{
-		$paging_sql = ' LIMIT ' . $offset . ',' . $limit;
-		$select_sql = "SELECT a.*, (SELECT COUNT(b.id) FROM pertanyaan b WHERE b.id_polling = a.id_polling) as jumlah_pertanyaan ";
-
-		$sql = $select_sql . $this->list_data_polling_sql();
-		$sql .= $paging_sql;
-		$query = $this->db->query($sql);
-		$data  = $query->result_array();
-
-		//Formating Output
-		$j = $offset;
-
-		return $data;
-	}
-
-	public function get_data_polling($id = 0)
-	{
-		$sql = "SELECT * FROM polling WHERE id_polling = '$id'";
-		$query = $this->db->query($sql);
-		$data = $query->result_array();
-		return $data;
-	}
-
-	public function insert_polling($id = 0)
-	{
-		$data = $_POST;
-		if ($id == 0)
-		{
-			$outp = $this->db->insert('polling', $data);
-		} else {
-			$this->db->where('id_polling', $id);
-			$outp = $this->db->update('polling', $data);
-		}
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
-	}
-
-	public function delete_polling($id = 0)
-	{
-		$sql = "DELETE FROM polling WHERE id_polling = '$id' ";
-		$query = $this->db->query($sql);
-	}
-
-	public function delete_all_polling()
-	{
-		$id_cb = $_POST['id_cb'];
-		if (count($id_cb))
-		{
-			foreach ($id_cb as $id)
-			{
-				$sql = "DELETE FROM  polling WHERE id_polling = '$id' ";
-				$outp = $this->db->query($sql, array(
-					$id
-				));
-			}
-		} else
-			$outp = false;
-
-		if ($outp)
-			$_SESSION['success'] = 1;
-		else
-			$_SESSION['success'] = -1;
-	}
-
-	public function paging_pertanyaan($id = 0, $p = 1, $o = 0)
-	{
-		$sql = "SELECT COUNT(*) as jml " . $this->list_data_pertanyaan_sql($id);
-		$query = $this->db->query($sql);
-		$row = $query->row_array();
-		$jml_data = $row['jml'];
-
-		$this->load->library('paging');
-		$cfg['page'] = $p;
-		$cfg['per_page'] = $_SESSION['per_page'];
-		$cfg['num_rows'] = $jml_data;
-		$this->paging->init($cfg);
-
-		return $this->paging;
-	}
-
-	private function list_data_pertanyaan_sql($id)
-	{
-		$sql = " FROM kontak_grup a
-			LEFT JOIN kontak b ON a.id_kontak = b.id
-			LEFT JOIN tweb_penduduk c ON b.id_pend = c.id
-			WHERE a.id_kontak <> '0' AND nama_grup = '$id' ";
-		$sql .= $this->search_anggota_sql();
-		return $sql;
-	}
-
-	public function list_data_pertanyaan($id = 0, $o = 0, $offset = 0, $limit = 500)
-	{
-		$paging_sql = ' LIMIT ' . $offset . ',' . $limit;
-
-		$select_sql = "SELECT a.*, c.*, b.*, (CASE when sex = '1' then 'Laki-laki' else 'Perempuan' end) as sex ";
-		$sql = $select_sql . $this->list_data_pertanyaan_sql($id);
-		$sql .= $paging_sql;
-
-		$query = $this->db->query($sql);
-		$data = $query->result_array();
-
-		$j = $offset;
-
-		return $data;
+		status_sukses($outp); //Tampilkan Pesan
 	}
 
 }
-
 ?>
