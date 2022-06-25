@@ -43,16 +43,27 @@
  */
 ?>
 
+<style type="text/css">
+	<?php if ($latar_website): ?>
+		body {
+			background-image: url('<?= base_url($latar_website) ?>') !important;
+		}
+	<?php endif; ?>
+</style>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>
-			<?=
-				$this->setting->website_title
-				. ' ' . ucwords($this->setting->sebutan_desa)
-				. (($desa['nama_desa']) ? ' ' . $desa['nama_desa'] : '')
-				. get_dynamic_title_page_from_path();
-			?>
+			<?php if ($title):?>
+				<?= $title; ?>
+			<?php else:?>
+				<?=
+					get_dynamic_title_page_from_path()
+					. ' ' . $this->setting->website_title
+					. ' ' . ucwords($this->setting->sebutan_desa)
+					. (($desa['nama_desa']) ? ' ' . $desa['nama_desa'] : '')
+				?>
+			<?php endif?>
 		</title>
 		<meta content="utf-8" http-equiv="encoding">
 		<meta name="keywords" content="OpenSID,opensid,sid,SID,SID CRI,SID-CRI,sid cri,sid-cri,Sistem Informasi Desa,sistem informasi desa, desa <?= $desa['nama_desa'];?>">
@@ -75,19 +86,24 @@
 		<?php else: ?>
 			<link rel="shortcut icon" href="<?= base_url()?>favicon.ico" />
 		<?php endif; ?>
+		<!-- CSS global theme -->
 		<link type='text/css' href="<?= base_url()?>assets/front/css/first.css" rel='Stylesheet' />
-
-		<!-- Styles untuk tema dan penyesuaiannya di folder desa -->
-		<link type='text/css' href="<?= base_url().$this->theme_folder.'/'.$this->theme.'/css/first.css'?>" rel='Stylesheet' />
-		<?php if (is_file("desa/css/".$this->theme."/desa-web.css")): ?>
-			<link type='text/css' href="<?= base_url()?>desa/css/<?= $this->theme ?>/desa-web.css" rel='Stylesheet' />
+		<!-- Styles untuk masing2 tema dan penyesuaiannya di folder desa -->
+		<link type='text/css' href="<?= base_url().$this->theme_folder.'/'.$this->theme.'/assets/css/pengaturan.css'?>" rel='Stylesheet' />
+		<?php if ($this->theme_folder == "themes"): ?>
+			<link type='text/css' href="<?= base_url("desa/pengaturan/$this->theme/desa-web.css"); ?>" rel='Stylesheet' />
+		<?php else: ?>
+			<link type='text/css' href="<?= base_url("$this->theme_folder/$this->theme/assets/css/desa-web.css"); ?>" rel='Stylesheet' />
 		<?php endif; ?>
-
 		<link type='text/css' href="<?= base_url()?>assets/css/font-awesome.min.css" rel='Stylesheet' />
 		<link type='text/css' href="<?= base_url()?>assets/css/ui-buttons.css" rel='Stylesheet' />
 		<?php if ($single_artikel OR $gallery): ?>
 			<link type='text/css' href="<?= base_url()?>assets/front/css/colorbox.css" rel='Stylesheet' />
 		<?php endif ?>
+		<!-- Ionicons -->
+		<link rel="stylesheet" href="<?= base_url()?>assets/bootstrap/css/ionicons.min.css">
+
+		<!-- DataTables -->
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/leaflet.css" />
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/mapbox-gl.css" />
 		<link rel="stylesheet" href="<?= base_url()?>assets/css/peta.css">
@@ -110,9 +126,21 @@
 		<script src="<?= base_url()?>assets/js/highcharts/highcharts-3d.js"></script>
 		<script src="<?= base_url()?>assets/js/highcharts/exporting.js"></script>
 		<script src="<?= base_url()?>assets/js/highcharts/highcharts-more.js"></script>
+		<script src="<?= base_url()?>assets/js/highcharts/sankey.js"></script>
+		<script src="<?= base_url()?>assets/js/highcharts/organization.js"></script>
+		<script src="<?= base_url()?>assets/js/highcharts/accessibility.js"></script>
+
+		<!-- Kelompok JS ini dibutuhkan untuk menggunakan script.js. TODO: pecah script.js -->
+		<script src="<?= base_url()?>assets/bootstrap/js/select2.full.min.js"></script>
+		<script src="<?= base_url()?>assets/bootstrap/js/bootstrap-datepicker.min.js"></script>
+		<script src="<?= base_url()?>assets/bootstrap/js/moment.min.js"></script>
+		<script src="<?= base_url()?>assets/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+		<script src="<?= base_url()?>assets/bootstrap/js/bootstrap-colorpicker.min.js"></script>
+		<script src="<?= base_url()?>assets/bootstrap/js/bootstrap3-wysihtml5.all.min.js"></script>
+
 		<!-- Untuk carousel, slider, teks_berjalan dan widget aparatur_desa -->
-		<script src="<?php echo base_url()?>assets/front/js/jquery.cycle2.min.js"></script>
-		<script src="<?php echo base_url()?>assets/front/js/jquery.cycle2.carousel.js"></script>
+		<script src="<?= base_url()?>assets/front/js/jquery.cycle2.min.js"></script>
+		<script src="<?= base_url()?>assets/front/js/jquery.cycle2.carousel.js"></script>
 		<?php $this->load->view('global/validasi_form'); ?>
 
 		<!-- Diperlukan untuk javascript yg mengakses resources -->

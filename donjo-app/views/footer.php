@@ -47,39 +47,8 @@
 		<!-- NOTIFICATION-->
 		<script type="text/javascript">
 
-			function tampil_badge(elem, url)
-			{
-				elem.load(url);
-				setTimeout(function()
-				{
-					if ( elem.text().trim().length )
-						elem.show();
-					else
-						elem.hide();
-				}, 500);
-			}
-
-			function refresh_badge(elem, url)
-			{
-				if ( ! elem.length) return;
-
-				tampil_badge(elem, url);
-				var refreshInbox = setInterval(function()
-				{
-					tampil_badge(elem, url);
-				}, 10000);
-			}
-
 			$('document').ready(function()
 			{
-
-				setTimeout(function()
-				{
-					refresh_badge($("#b_permohonan_surat"), "<?= site_url('notif/permohonan_surat'); ?>");
-					refresh_badge($("#b_komentar"), "<?= site_url('notif/komentar'); ?>");
-					refresh_badge($("#b_inbox"), "<?= site_url('notif/inbox'); ?>");
-				}, 500);
-
 				if ($('#success-code').val() == 1)
 				{
 					notify = 'success';
@@ -120,17 +89,6 @@
 			});
 		</script>
 		<?php $_SESSION['success']=0; ?>
-
-		<!-- Notifikasi PIN Warga -->
-		<script type="text/javascript">
-			<?php if ($_SESSION['pin']): ?>
-				$(window).on('load', function()
-				{
-					$('#pinBox').modal('show');
-				});
-				<?php unset($_SESSION['pin']) ?>
-			<?php endif ?>
-		</script>
 	</body>
 </html>
 

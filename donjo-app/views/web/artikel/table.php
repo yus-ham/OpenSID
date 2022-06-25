@@ -16,9 +16,22 @@
 		</ol>
 	</section>
 	<section class="content" id="maincontent">
-		<form id="mainform" name="mainform" action="" method="post">
+		<form id="mainform" name="mainform" method="post">
 			<div class="row">
 				<div class="col-md-3">
+					<div class="box box-info">
+						<div class="box-body no-padding">
+							<!-- <h3 class="box-title"> -->
+								<ul class="nav nav-pills nav-stacked">
+									<li class="<?= jecho($cat, -1, 'active'); ?>">
+										<a href='<?= site_url("web/tab/-1")?>'>
+											Semua Artikel Dinamis
+										</a>
+									</li>
+								</ul>
+							<!-- </h3> -->
+						</div>
+					</div>
 					<div class="box box-info">
 						<div class="box-header with-border">
 							<h3 class="box-title">Kategori Artikel</h3>
@@ -92,7 +105,7 @@
 							<div class="row">
 								<div class="col-sm-12">
 									<div class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-										<form id="mainform" name="mainform" action="" method="post">
+										<form id="mainform" name="mainform" method="post">
 											<div class="row">
 												<div class="col-sm-6">
 													<select class="form-control input-sm " name="status" onchange="formAction('mainform', '<?= site_url("web/filter/status/$cat")?>')">

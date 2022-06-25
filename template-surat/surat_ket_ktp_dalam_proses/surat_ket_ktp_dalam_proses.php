@@ -10,7 +10,7 @@
            	</a>
 					</div>
 					<div class="box-body">
-						<form action="" id="main" name="main" method="POST" class="form-horizontal">
+						<form id="main" name="main" method="POST" class="form-horizontal">
 							<?php include("donjo-app/views/surat/form/_cari_nik.php"); ?>
 						</form>
 						<form id="validasi" action="<?= $form_action?>" method="POST" target="_blank" class="form-surat form-horizontal">
@@ -27,6 +27,7 @@
 							<?php	endif; ?>
 							<?php include("donjo-app/views/surat/form/nomor_surat.php"); ?>
 							<?php include("donjo-app/views/surat/form/_pamong.php"); ?>
+							<?php include("donjo-app/views/surat/form/tampil_foto.php"); ?>
 						</form>
 					</div>
 					<?php include("donjo-app/views/surat/form/tombol_cetak.php"); ?>

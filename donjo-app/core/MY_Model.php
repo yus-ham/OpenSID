@@ -13,15 +13,23 @@ class MY_Model extends CI_Model {
 	// Konversi url menu menjadi slug tanpa mengubah data
 	public function menu_slug($url)
 	{
+		$this->load->model('first_artikel_m');
+
 		$cut = explode('/', $url);
 
 		switch ($cut[0])
 		{
 			case 'artikel':
-				$this->load->model('first_artikel_m');
+
 				$data = $this->first_artikel_m->get_artikel($cut[1]);
-				$url = ($data) ? ($cut[0].'/'.buat_slug($data)) : ($url);
+				$url = ($data) ? ($cut[0] . '/' . buat_slug($data)) : ($url);
 				break;
+
+			case 'kategori':
+				$data = $this->first_artikel_m->get_kategori($cut[1]);
+				$url = ($data) ? ('artikel/' . $cut[0] . '/' . $data['slug']) : ($url);
+				break;
+
 			case 'arsip':
 			case 'peraturan_desa':
 			case 'data_analisis':
@@ -31,7 +39,9 @@ class MY_Model extends CI_Model {
 			case 'load_apbdes':
 			case 'load_aparatur_wilayah':
 			case 'peta':
+			case 'data-suplemen':
 				break;
+
 			default:
 				$url = 'first/'.$url;
 				break;
@@ -95,7 +105,7 @@ class MY_Model extends CI_Model {
 		else return true;
 	}
 
-	public function tambah_indeks($tabel, $kolom)
+	public function tambah_indeks($tabel, $kolom, $index = "UNIQUE")
 	{
 		$db = $this->db->database;
 		$ada = $this->db
@@ -106,8 +116,32 @@ class MY_Model extends CI_Model {
 			->where('index_name', $kolom)
 			->get()->row()->ada;
 		if ( ! $ada)
-			return $this->db->query("ALTER TABLE $tabel ADD UNIQUE $kolom (`$kolom`)");
+			return $this->db->query("ALTER TABLE $tabel ADD $index $kolom (`$kolom`)");
 		else return true;
 	}
 
+	public function tambah_modul($modul)
+	{
+		$sql = $this->db->insert_string('setting_modul', $modul) . " ON DUPLICATE KEY UPDATE modul = VALUES(modul), url = VALUES(url), ikon = VALUES(ikon), parent = VALUES(parent)";
+		return $this->db->query($sql);
+	}
+
+	public function tambah_setting($setting)
+	{
+		$sql = $this->db->insert_string('setting_aplikasi', $setting) . " ON DUPLICATE KEY UPDATE keterangan = VALUES(keterangan)";
+		return $this->db->query($sql);
+	}
+
+	// fungsi untuk format paginasi
+	// $per_page = $this->session->per_page;
+	public function paginasi($page = 1, $jml_data = 0, $per_page = 0)
+	{
+		$this->load->library('paging');
+		$cfg['page'] = $page;
+		$cfg['per_page'] = $per_page;
+		$cfg['num_rows'] = $jml_data;
+		$this->paging->init($cfg);
+
+		return $this->paging;
+	}
 }

@@ -43,6 +43,7 @@
  */
 ?>
 
+<!-- TODO: Pindahkan ke external css -->
 <style>
   #map
   {
@@ -145,7 +146,7 @@
 
     //Menampilkan overlayLayers Peta Semua Wilayah
     <?php if (!empty($wil_atas['path'])): ?>
-      var overlayLayers = overlayWil(marker_desa, marker_dusun, marker_rw, marker_rt);
+      var overlayLayers = overlayWil(marker_desa, marker_dusun, marker_rw, marker_rt, "<?=ucwords($this->setting->sebutan_desa)?>", "<?=ucwords($this->setting->sebutan_dusun)?>");
     <?php else: ?>
       var overlayLayers = {};
     <?php endif; ?>
@@ -182,8 +183,8 @@
     //Menghapus Peta wilayah
     hapusPeta(peta_garis);
 
-    // Menampilkan OverLayer Area, Garis, Lokasi
-    layerCustom = tampilkan_layer_area_garis_lokasi(peta_garis, '<?=addslashes(json_encode($all_area))?>', '<?=addslashes(json_encode($all_garis))?>', '<?=addslashes(json_encode($all_lokasi))?>', '<?= base_url().LOKASI_SIMBOL_LOKASI?>', '<?= base_url().LOKASI_FOTO_AREA?>', '<?= base_url().LOKASI_FOTO_GARIS?>', '<?= base_url().LOKASI_FOTO_LOKASI?>');
+    // Menampilkan OverLayer Area, Garis, Lokasi plus Lokasi Pembangunan
+		var layerCustom = tampilkan_layer_area_garis_lokasi_plus(peta_garis, '<?= addslashes(json_encode($all_area)) ?>', '<?= addslashes(json_encode($all_garis)) ?>', '<?= addslashes(json_encode($all_lokasi)) ?>', '<?= addslashes(json_encode($all_lokasi_pembangunan)) ?>', '<?= base_url() . LOKASI_SIMBOL_LOKASI ?>', "<?= favico_desa()?>", '<?= base_url() . LOKASI_FOTO_AREA ?>', '<?= base_url() . LOKASI_FOTO_GARIS ?>', '<?= base_url() . LOKASI_FOTO_LOKASI ?>', '<?= base_url() . LOKASI_GALERI ?>', '<?= site_url("pembangunan/info_pembangunan/")?>');
 
     L.control.layers(baseLayers, overlayLayers, {position: 'topleft', collapsed: true}).addTo(peta_garis);
     L.control.groupedLayers('', layerCustom, {groupCheckboxes: true, position: 'topleft', collapsed: true}).addTo(peta_garis);

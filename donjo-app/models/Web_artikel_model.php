@@ -73,10 +73,10 @@
 				LEFT JOIN kategori k ON a.id_kategori = k.id
 				WHERE id_kategori = ? ";
 		elseif ($cat == -1)
-			// Semua artikel
+			// Semua artikel dinamis (tidak termasuk artikel statis)
 			$sql = "FROM artikel a
 				LEFT JOIN kategori k ON a.id_kategori = k.id
-				WHERE 1 ";
+				WHERE 1 AND id_kategori NOT IN ('999', '1000', '1001')";
 		else
 			// Artikel dinamis tidak berkategori
 			$sql = "FROM artikel a
@@ -629,4 +629,17 @@
 				$this->db->where('id', $id)->update('artikel', array('hit' => $hit));
 		}
 	}
+
+	public function list_artikel_statis()
+	{
+		// '999' adalah id_kategori untuk artikel statis
+		$data = $this->db
+			->select('id, judul')
+			->where('id_kategori', '999')
+			->get('artikel')
+			->result_array();
+
+		return $data;
+	}
+
 }

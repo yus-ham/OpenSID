@@ -6,8 +6,7 @@
  *
  * donjo-app/helpers/donjolib_helper.php
  *
- */
-/*
+ *
  * File ini bagian dari:
  *
  * OpenSID
@@ -39,9 +38,6 @@
  * @license	http://www.gnu.org/licenses/gpl.html	GPL V3
  * @link 	https://github.com/OpenSID/OpenSID
  */
-?>
-
-<?php
 
 	/*
 		Mencari nilai di nested array (array dalam array).
@@ -160,6 +156,11 @@
 		}
 	}
 
+	function compared_return($a, $b, $retval=null)
+	{
+		($a===$b) and print('active');
+	}
+
 	function selected($a, $b, $opt=0)
 	{
 		if ($a == $b)
@@ -212,21 +213,22 @@
 		return $str;
 	}
 
-	function bulan($bln)
+	function bulan()
 	{
 		$bulan = array(1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember');
-		return $bulan[(int)$bln];
+		return $bulan;
 	}
 
-	function getBulan($bln)
+	function getBulan(int $bln)
 	{
-		return bulan($bln);
+		$bulan = bulan();
+		return $bulan[(int)$bln];
 	}
 
 	function nama_bulan($tgl)
 	{
 		$ar = explode('-', $tgl);
-		$nm = bulan($ar[1]);
+		$nm = getBulan($ar[1]);
 		$o = $ar[0] .' '. $nm .' '. $ar[2];
 		return $o;
 	}
@@ -284,8 +286,9 @@
 		return $tanggal.' '.$bulan.' '.$tahun.' '.$jam;
 	}
 
-	function tgl_indo_dari_str($tgl_str) {
-		$tanggal = tgl_indo(date('Y m d',strtotime($tgl_str)));
+	function tgl_indo_dari_str($tgl_str, $kosong='-') {
+		$time = strtotime($tgl_str);
+		$tanggal = $time ? tgl_indo(date('Y m d',strtotime($tgl_str))) : $kosong;
 		return $tanggal;
 	}
 
@@ -363,17 +366,20 @@ function cek_login(){
 	}
 }
 
-//time out Mandiri set 3 login per 5 menit
-function mandiri_timer(){
-	$time=300;  //300 detik
+//time out Mandiri set 3 login per 1 menit
+function mandiri_timer()
+{
+	$time = 60;  //60 detik
 	$_SESSION['mandiri_try'] = 4;
-	$_SESSION['mandiri_wait']=0;
-	$_SESSION['mandiri_timeout']=time()+$time;
+	$_SESSION['mandiri_wait'] = 0;
+	$_SESSION['mandiri_timeout'] = time() + $time;
 }
 
-function mandiri_timeout(){
-	(isset($_SESSION['mandiri_timeout'])) ? $timeout=$_SESSION['mandiri_timeout'] : $timeout = null;
-	if(time()>$timeout){
+function mandiri_timeout()
+{
+	(isset($_SESSION['mandiri_timeout'])) ? $timeout = $_SESSION['mandiri_timeout'] : $timeout = null;
+	if (time() > $timeout)
+	{
 		mandiri_timer();
 	}
 }
@@ -603,8 +609,15 @@ function ribuan($angka)
 // Kalau angka romawi jangan ubah
 function set_ucwords($data)
 {
-	if (is_angka_romawi($data)) return $data;
-	return ucwords(strtolower($data));
+	$exp = explode(' ', $data);
+
+	$data = '';
+	for ($i = 0; $i < count($exp); $i++)
+	{
+		$data .= " " . (is_angka_romawi($exp[$i]) ?  $exp[$i] : ucwords(strtolower($exp[$i])));
+	}
+
+	return trim($data);
 }
 
 function persen($data)

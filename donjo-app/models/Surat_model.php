@@ -112,9 +112,10 @@
 		$penduduk = array();
 		foreach($data as $row)
 		{
-			$nama = addslashes($row['nama']);
+			$nama = $row['nama'];
 			$alamat = addslashes("Alamat: RT-{$row['rt']}, RW-{$row['rw']} {$row['dusun']}");
-			$info_pilihan_penduduk = "NIK/Tag ID Card : {$row['nik']}/{$row['tag_id_card']} - {$nama}\n{$alamat}";
+			$tag_id = empty($row['tag_id_card']) ? '' : '/' . $row['tag_id_card'];
+			$info_pilihan_penduduk = "NIK/Tag ID Card : {$row['nik']}{$tag_id} - {$nama}\n{$alamat}";
 			$penduduk[] = array('id' => $row['id'], 'text' => $info_pilihan_penduduk);
 		}
 
@@ -221,7 +222,7 @@
 		WHERE u.id = ?";
 		$query = $this->db->query($sql, $id);
 		$data  = $query->row_array();
-		$data['nama'] = addslashes($data['nama']);
+		$data['nama'] = $data['nama'];
 		$data['alamat_wilayah']= $this->get_alamat_wilayah($data);
 		return $data;
 	}
@@ -433,23 +434,34 @@
 	public function get_data_ayah($id=0)
 	{
 		$penduduk = $this->get_data_penduduk($id);
-		// Cari berdasarkan ayah_nik dulu
-		if (!empty($penduduk['ayah_nik']))
+		//cari kepala keluarga pria kalau penduduknya seorang anak dalam keluarga
+		if ($penduduk['kk_level'] == 4)
+		{
+			$id_kk = $penduduk['id_kk'];
+			$data = $this->db
+				->select('u.id')
+				->from('tweb_penduduk u')
+				->where('u.id_kk', $id_kk)
+				->where('u.sex', 1)
+				->group_start()
+					// Kepala Keluarga
+					->where('u.kk_level', 1)
+					// Suami dari ibu
+					->or_group_start()
+						->where('u.kk_level', 2)
+					->group_end()
+				->group_end()
+				->limit(1)->get()
+				->row_array();
+		}
+
+		// jika tidak ada Cari berdasarkan ayah_nik
+		if (empty($data['id']) && ! empty($penduduk['ayah_nik']))
 		{
 			$sql = "SELECT u.id
 				FROM tweb_penduduk u
 				WHERE u.nik = ? limit 1";
 			$query = $this->db->query($sql, $penduduk['ayah_nik']);
-			$data = $query->row_array();
-		}
-
-		// Kalau tidak ada, cari kepala keluarga pria kalau penduduknya seorang anak dalam keluarga
-		if (!isset($data['id']) AND $penduduk['kk_level'] == 4 )
-		{
-			$sql = "SELECT u.id
-				FROM tweb_penduduk u
-				WHERE (u.id_kk = (SELECT id_kk FROM tweb_penduduk where id = $id) AND u.kk_level = 1 AND u.sex = 1) limit 1";
-			$query = $this->db->query($sql);
 			$data = $query->row_array();
 		}
 		if (isset($data['id']))
@@ -458,25 +470,22 @@
 			$ayah = $this->get_data_pribadi($ayah_id);
 			return $ayah;
 		}
+		else
+		{
+			// Ambil data sebisanya dari data ayah penduduk
+			$ayah['nik'] = $penduduk['ayah_nik'];
+			$ayah['nama'] = $penduduk['nama_ayah'];
+			return $ayah;
+		}
 	}
 
 	public function get_data_ibu($id=0)
 	{
 		$penduduk = $this->get_data_penduduk($id);
-		// Cari berdasarkan ibu_nik dulu
-		if (!empty($penduduk['ibu_nik']))
-		{
-			$data = $this->db
-				->select('u.id')
-				->from('tweb_penduduk u')
-				->where('nik', $penduduk['ibu_nik'])
-				->limit(1)->get()
-				->row_array();
-		}
 
-		// Kalau tidak ada, cari istri keluarga kalau penduduknya seorang anak dalam keluarga
+		// Cari istri keluarga kalau penduduknya seorang anak dalam keluarga
 		// atau kepala keluarga perempuan
-		if (!isset($data['id']) AND $penduduk['kk_level'] == 4 )
+		if ($penduduk['kk_level'] == 4 )
 		{
 			$id_kk = $penduduk['id_kk'];
 			$data = $this->db
@@ -495,6 +504,17 @@
 				->limit(1)->get()
 				->row_array();
 		}
+
+		// Cari berdasarkan ibu_nik
+		if (empty($data['id']) AND ! empty($penduduk['ibu_nik']))
+		{
+			$data = $this->db
+				->select('u.id')
+				->from('tweb_penduduk u')
+				->where('nik', $penduduk['ibu_nik'])
+				->limit(1)->get()
+				->row_array();
+		}
 		if (isset($data['id']))
 		{
 			$ibu_id = $data['id'];
@@ -508,27 +528,6 @@
 			$ibu['nama'] = $penduduk['nama_ibu'];
 			return $ibu;
 		}
-	}
-
-	public function get_dusun($dusun='')
-	{
-		$sql = "SELECT * FROM tweb_wil_clusterdesa WHERE dusun = ? AND rt = '0' AND rw = '0'";
-		$query = $this->db->query($sql, $dusun);
-		return $query->row_array();
-	}
-
-	public function get_rw($dusun='', $rw='')
-	{
-		$sql = "SELECT * FROM tweb_wil_clusterdesa WHERE dusun = ? AND rw = ? AND rt = '0'";
-		$query = $this->db->query($sql, array($dusun, $rw));
-		return $query->row_array();
-	}
-
-	public function get_rt($dusun='', $rw='', $rt='')
-	{
-		$sql = "SELECT * FROM tweb_wil_clusterdesa WHERE dusun = ? AND rw = ? AND rt = ?";
-		$query = $this->db->query($sql, array($dusun, $rw, $rt));
-		return $query->row_array();
 	}
 
 	public function get_surat($url='')
@@ -623,6 +622,28 @@
 			$placeholder_logo = '/'.$awalan_logo.'.*'.$akhiran_sementara.'/s';
 			// Ganti logo yang ditemukan
 			$buffer = preg_replace($placeholder_logo, $logo_hex, $buffer);
+		}
+		return $buffer;
+	}
+
+	private function sisipkan_foto($nama_foto, $buffer)
+	{
+		$file_foto = APPPATH . '../' . LOKASI_USER_PICT . $nama_foto;
+		if (!is_file($file_foto)) return $buffer;
+		$akhiran_foto = 'c37e16e40000000049454e44ae426082';
+		$awalan_foto = '89504e470d0a1a0a0000000d49484452000000c8000000fa0803000000d3';
+		$akhiran_sementara = 'akhiran_foto';
+		$jml_foto = substr_count($buffer, $akhiran_foto);
+		if ($jml_foto <= 0) return $buffer;
+
+		$foto_bytes = file_get_contents($file_foto);
+		$foto_hex = implode(unpack("H*", $foto_bytes));;
+		for ($i=0; $i<$jml_foto; $i++)
+		{
+			$pos = strpos($buffer, $akhiran_foto);
+	    $buffer = substr_replace($buffer, $akhiran_sementara, $pos, strlen($akhiran_foto));
+			$placeholder_foto = '/'.$awalan_foto.'.*'.$akhiran_sementara.'/s';
+			$buffer = preg_replace($placeholder_foto, $foto_hex, $buffer);
 		}
 		return $buffer;
 	}
@@ -746,6 +767,7 @@
 		$tgl = tgl_indo(date("Y m d"));
 		$tgl_hijri = Hijri_date_id::date('j F Y');
 		$thn = date("Y");
+		$tampil_foto = $input['tampil_foto'];
 
 		$tgllhr = ucwords(tgl_indo($individu['tanggallahir']));
 		$individu['nama'] = strtoupper($individu['nama']);
@@ -764,6 +786,10 @@
 			$buffer = $this->bersihkan_kode_isian($buffer);
 			$buffer = $this->sisipkan_kop_surat($buffer);
 			$buffer = $this->sisipkan_logo($config['logo'], $buffer);
+			if ($tampil_foto)
+			{
+				$buffer = $this->sisipkan_foto($individu['foto'], $buffer);
+			}
 
 			//PRINSIP FUNGSI
 			//-> [kata_template] -> akan digantikan dengan data di bawah ini (sebelah kanan)
@@ -814,11 +840,11 @@
                 "[kode_pos]"          => $config['kode_pos'],
                 "[kode_provinsi]"     => $config['kode_propinsi'],
                 "[nama_des]"          => $config['nama_desa'],
-                "[nama_kab]"          => $config['nama_kabupaten'],
+                "[nama_kab]"          => ucwords(strtolower($config['nama_kabupaten'])),
                 "[nama_kabupaten]"    => $config['nama_kabupaten'],
                 "[nama_kec]"          => $config['nama_kecamatan'],
                 "[nama_kecamatan]"    => $config['nama_kecamatan'],
-                "[nama_provinsi]"     => $config['nama_propinsi'],
+                "[nama_provinsi]"     => ucwords(strtolower($config['nama_propinsi'])),
                 "[nama_kepala_camat]" => $config['nama_kepala_camat'],
                 "[nama_kepala_desa]"  => $config['nama_kepala_desa'],
                 "[nip_kepala_camat]"  => $config['nip_kepala_camat'],
@@ -1109,5 +1135,16 @@
 			->get('log_surat')
 			->row()->jml;
 		return $jml;
+	}
+
+	public function masa_berlaku_surat($url)
+	{
+		$masa_berlaku = $this->db
+		->select('masa_berlaku, satuan_masa_berlaku')
+		->from('tweb_surat_format')
+		->where('url_surat', $url)
+		->get()->result_array()[0];
+
+		return $masa_berlaku;
 	}
 }

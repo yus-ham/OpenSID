@@ -9,6 +9,7 @@
 		<?php else: ?>
 			<link rel="shortcut icon" href="<?= base_url()?>favicon.ico" />
 		<?php endif; ?>
+		<!-- TODO: Pindahkan ke external css -->
 		<style>
 			.textx
 			{
@@ -74,10 +75,10 @@
 						<?php foreach ($main as $data): ?>
 						<tr>
 							<td><?= $data['no']?></td>
-							<td><?= 'Nomor '.$data['attr']['no_kep_kades'].", Tanggal ".tgl_indo_dari_str($data['attr']['tgl_kep_kades'])?></td>
+							<td><?= 'Nomor '.strip_kosong($data['attr']['no_kep_kades']).", Tanggal ".tgl_indo_dari_str($data['attr']['tgl_kep_kades'])?></td>
 							<td><?= $data['nama']?></td>
 							<td><?= $data['attr']['uraian']?></td>
-							<td><?= 'Nomor '.$data['attr']['no_lapor'].", Tanggal ".tgl_indo_dari_str($data['attr']['tgl_lapor'])?></td>
+							<td><?= 'Nomor '.strip_kosong($data['attr']['no_lapor']).", Tanggal ".tgl_indo_dari_str($data['attr']['tgl_lapor'])?></td>
 							<td><?= $data['attr']['keterangan']?></td>
 						</tr>
 						<?php endforeach; ?>
@@ -93,7 +94,7 @@
 						-->
 						<td colspan="1">&nbsp;</td>
 						<td colspan="3">MENGETAHUI</td>
-						<td colspan="2"><span class="underline"><?= strtoupper($this->setting->sebutan_desa.' '.$desa['nama_desa'].', '.$desa['nama_kecamatan'].', '.tgl_indo(date("Y m d")))?></span></td>
+						<td colspan="2"><span class="underline"><?= strtoupper($this->setting->sebutan_desa.' '.$desa['nama_desa'].', '.tgl_indo(date("Y m d")))?></span></td>
 					</tr>
 					<tr>
 						<td colspan="1">&nbsp;</td>

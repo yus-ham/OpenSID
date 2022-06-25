@@ -35,11 +35,11 @@
  * KEWAJIBAN APAPUN ATAS PENGGUNAAN ATAU LAINNYA TERKAIT APLIKASI INI.
  *
  * @package OpenSID
- * @author  Tim Pengembang OpenDesa
+ * @author Tim Pengembang OpenDesa
  * @copyright Hak Cipta 2009 - 2015 Combine Resource Institution (http://lumbungkomunitas.net/)
  * @copyright Hak Cipta 2016 - 2020 Perkumpulan Desa Digital Terbuka (https://opendesa.id)
- * @license http://www.gnu.org/licenses/gpl.html  GPL V3
- * @link  https://github.com/OpenSID/OpenSID
+ * @license http://www.gnu.org/licenses/gpl.html GPL V3
+ * @link https://github.com/OpenSID/OpenSID
  */
 ?>
 
@@ -51,7 +51,7 @@
 		<title>
 			<?=$this->setting->admin_title
 				. ' ' . ucwords($this->setting->sebutan_desa)
-				. (($desa['nama_desa']) ? ' ' . $desa['nama_desa']:  '')
+				. (($desa['nama_desa']) ? ' ' . $desa['nama_desa']: '')
 				. get_dynamic_title_page_from_path();
 			?>
 		</title>
@@ -124,6 +124,10 @@
 		<script src="<?= base_url()?>assets/js/shp.js"></script>
 		<script src="<?= base_url()?>assets/js/leaflet.shpfile.js"></script>
 		<script src="<?= base_url()?>assets/js/leaflet.groupedlayercontrol.min.js"></script>
+		<script src="<?= base_url()?>assets/js/leaflet.browser.print.js"></script>
+		<script src="<?= base_url()?>assets/js/leaflet.browser.print.utils.js"></script>
+		<script src="<?= base_url()?>assets/js/leaflet.browser.print.sizes.js"></script>
+		<script src="<?= base_url()?>assets/js/dom-to-image.min.js"></script>
 
 		<!-- Diperlukan untuk global automatic base_url oleh external js file -->
 		<script type="text/javascript">
@@ -136,12 +140,16 @@
 		<script src="<?= base_url()?>assets/js/highcharts/highcharts-3d.js"></script>
 		<script src="<?= base_url()?>assets/js/highcharts/exporting.js"></script>
 		<script src="<?= base_url()?>assets/js/highcharts/highcharts-more.js"></script>
+		<script src="<?= base_url()?>assets/js/highcharts/sankey.js"></script>
+		<script src="<?= base_url()?>assets/js/highcharts/organization.js"></script>
+		<script src="<?= base_url()?>assets/js/highcharts/accessibility.js"></script>
+
 		<?php require __DIR__ .'/head_tags.php' ?>
 	</head>
 	<body class="<?= $this->setting->warna_tema_admin; ?> sidebar-mini fixed <?php if ($minsidebar==1): ?>sidebar-collapse<?php endif ?>">
 		<div class="wrapper">
 			<header class="main-header">
-				<a href="<?=site_url()?>first"  target="_blank" class="logo">
+				<a href="<?= site_url(); ?>" target="_blank" class="logo">
 					<span class="logo-mini"><b>SID</b></span>
 					<span class="logo-lg"><b>OpenSID</b></span>
 				</a>
@@ -158,11 +166,23 @@
 									</a>
 								</li>
 							<?php endif; ?>
+							<?php if ($notif_langganan): ?>
+								<li>
+									<a href="<?= site_url('pelanggan'); ?>">
+										<span><i class="fa <?= $notif_langganan['ikon'] ?> fa-lg" title="Status Langganan <?= $notif_langganan['masa'] ?> hari" style="color: <?= $notif_langganan['warna'] ?>;"></i>&nbsp;</span>
+										<?php if ($notif_langganan['status'] > 2) : ?>
+											<span class="badge" id="b_langganan">!</span>
+										<?php endif; ?>
+									</a>
+								</li>
+							<?php endif; ?>
 							<?php if ($this->CI->cek_hak_akses('b', 'permohonan_surat_admin')): ?>
 								<li>
 									<a href="<?= site_url('permohonan_surat_admin/clear'); ?>">
 										<span><i class="fa fa-print fa-lg" title="Permohonan Surat"></i>&nbsp;</span>
-										<span class="badge" id="b_permohonan_surat" style="display: none;"></span>
+										<?php if ($notif_permohonan_surat) : ?>
+											<span class="badge" id="b_permohonan_surat"><?= $notif_permohonan_surat ?></span>
+										<?php endif; ?>
 									</a>
 								</li>
 							<?php endif; ?>
@@ -170,7 +190,9 @@
 								<li>
 									<a href="<?= site_url('komentar'); ?>">
 										<span><i class="fa fa-commenting-o fa-lg" title="Komentar"></i>&nbsp;</span>
-										<span class="badge" id="b_komentar" style="display: none;"></span>
+										<?php if ($notif_komentar) : ?>
+											<span class="badge" id="b_komentar"><?= $notif_komentar ?></span>
+										<?php endif; ?>
 									</a>
 								</li>
 							<?php endif; ?>
@@ -178,7 +200,9 @@
 								<li>
 									<a href="<?= site_url('mailbox'); ?>">
 										<span><i class="fa fa-envelope-o fa-lg" title="Pesan Masuk"></i>&nbsp;</span>
-										<span class="badge" id="b_inbox" style="display: none;"></span>
+										<?php if ($notif_inbox) : ?>
+											<span class="badge" id="b_inbox"><?= $notif_inbox ?></span>
+										<?php endif; ?>
 									</a>
 								</li>
 							<?php endif; ?>
@@ -205,12 +229,19 @@
 									</li>
 								</ul>
 							</li>
+							<?php if ($this->controller == 'pelanggan' && $this->CI->cek_hak_akses('u', $this->controller)): ?>
+								<li>
+									<a href="#" data-remote="false" data-toggle="modal" data-title="Pengaturan <?= ucwords($this->controller); ?>" data-target="#pengaturan">
+										<span><i class="fa fa-gear"></i>&nbsp;</span>
+									</a>
+								</li>
+							<?php endif; ?>
 						</ul>
 					</div>
 				</nav>
 			</header>
 			<input id="success-code" type="hidden" value="<?= $_SESSION['success']?>">
-			<!-- Untuk menampilkan modal bootstrap umum  -->
+			<!-- Untuk menampilkan modal bootstrap umum -->
 			<div class="modal fade" id="modalBox" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				<div class='modal-dialog'>
 					<div class='modal-content'>
@@ -222,6 +253,21 @@
 					</div>
 				</div>
 			</div>
-			<!-- Untuk menampilkan dialog pengumuman  -->
-			<?= $this->pengumuman; ?>
 
+			<!-- Untuk menampilkan pengaturan -->
+			<?php if ($this->controller == 'pelanggan' && $this->CI->cek_hak_akses('u', $this->controller)): ?>
+				<div class="modal fade" id="pengaturan" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="myModalLabel"> Pengaturan <?= ucwords($this->controller); ?></h4>
+							</div>
+							<?php $this->load->view("global/modal_setting", ['kategori' => [$this->controller]]); ?>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+			
+			<!-- Untuk menampilkan dialog pengumuman -->
+			<?= $this->pengumuman; ?>

@@ -131,6 +131,15 @@
 			LEFT JOIN tweb_penduduk t ON u.nik_kepala = t.id
 			LEFT JOIN tweb_wil_clusterdesa c ON u.id_cluster = c.id";
 
+		// Yg berikut hanya untuk menampilkan peserta bantuan
+		if ($this->session->bantuan_keluarga)
+		{
+			$sql .= "
+				LEFT JOIN program_peserta bt ON bt.peserta = u.no_kk
+				LEFT JOIN program rcb ON bt.program_id = rcb.id
+			";
+		}
+
 		$sql .= " WHERE 1 ";
 		$sql .=	$this->search_sql();
 		$sql .=	$this->kumpulan_kk_sql();
@@ -144,6 +153,11 @@
 			array('kelas', 'u.kelas_sosial'),
 			array('id_bos', 'id_bos'),
 		];
+
+		if ($this->session->bantuan_keluarga)
+		{
+			$kolom_kode[] = array('bantuan_keluarga', 'rcb.id');
+		}
 
 		foreach ($kolom_kode as $kolom)
 		{
@@ -341,6 +355,14 @@
 		UNSET($data['rw']);
 		UNSET($data['no_kk']);
 
+		$tgl_lapor = rev_tgl($_POST['tgl_lapor']);
+		if ($_POST['tgl_peristiwa'])
+			$tgl_peristiwa = rev_tgl($_POST['tgl_peristiwa']);
+		else
+			$tgl_peristiwa = rev_tgl($_POST['tanggallahir']);
+		unset($data['tgl_lapor']);
+		unset($data['tgl_peristiwa']);
+
 		// Simpan alamat keluarga sebelum menulis penduduk
 		$data2['alamat'] = $data['alamat'];
 		UNSET($data['alamat']);
@@ -366,23 +388,15 @@
 		$this->db->where('id', $id_pend);
 		$this->db->update('tweb_penduduk', $default);
 
-		$satuan = $_POST['tanggallahir'];
-		$blnlahir = substr($satuan,3,2);
-		$thnlahir = substr($satuan,6,4);
-		$blnskrg = (date("m"));
-		$thnskrg = (date("Y"));
-		if (($blnlahir == $blnskrg) and ($thnlahir == $thnskrg))
-		{
-			$x['id_detail'] = '1';
-		}
-		else
-		{
-			$x['id_detail'] = '5';
-		}
-
-		$x['id_pend'] = $id_pend;
-		$x['bulan'] = $blnskrg;
-		$x['tahun'] = $thnskrg;
+		// Jenis peristiwa didapat dari form yang berbeda
+		// Jika peristiwa lahir akan mengambil data dari field tanggal lahir
+		$x = [
+			'tgl_peristiwa' => $tgl_peristiwa,
+			'kode_peristiwa' => $this->session->jenis_peristiwa,
+			'tgl_lapor' => $tgl_lapor,
+			'id_pend' => $id_pend,
+			'created_by' => $this->session->user
+		];
 		$this->penduduk_model->tulis_log_penduduk_data($x);
 
 		$log['id_pend'] = 1;
@@ -549,16 +563,6 @@
 		}
 	}
 
-	// TODO: Gunakan wilayah_model
-	public function get_dusun($id = 0)
-	{
-		$sql = "SELECT * FROM tweb_keluarga WHERE dusun_id = ?";
-		$query = $this->db->query($sql, $id);
-		$data = $query->row_array();
-
-		return $data;
-	}
-
 	public function get_keluarga($id = 0)
 	{
 		$sql = "SELECT k.*, b.dusun as dusun, b.rw as rw
@@ -681,7 +685,7 @@
 		}
 
 		$this->db
-			->select('nik, u.id, u.nama, u.tanggalperkawinan, u.status_kawin as status_kawin_id, tempatlahir, tanggallahir')
+			->select('nik, u.id, u.nama, u.tanggalperkawinan, u.status_kawin as status_kawin_id, u.sex as sex_id, tempatlahir, tanggallahir')
 			->select('('.$umur.') AS umur')
 			->select('a.nama as agama, d.nama as pendidikan, j.nama as pekerjaan, x.nama as sex, w.nama as status_kawin')
 			->select('h.nama as hubungan, f.nama as warganegara, warganegara_id, nama_ayah, nama_ibu, g.nama as golongan_darah')
@@ -762,20 +766,14 @@
 		unset($data['file_foto']);
 		unset($data['old_foto']);
 		unset($data['nik_lama']);
-
-		$satuan = $_POST['tanggallahir'];
-		$blnlahir = substr($satuan, 3, 2);
-		$thnlahir= substr($satuan, 6, 4);
-		$blnskrg = (date("m"));
-		$thnskrg = (date("Y"));
-		if (($blnlahir == $blnskrg) and ($thnlahir == $thnskrg))
-		{
-			$id_detail='1';
-		}
+		
+		$tgl_lapor = rev_tgl($_POST['tgl_lapor']);
+		if ($_POST['tgl_peristiwa'])
+			$tgl_peristiwa = rev_tgl($_POST['tgl_peristiwa']);
 		else
-		{
-			$id_detail='5';
-		}
+			$tgl_peristiwa = rev_tgl($_POST['tanggallahir']);
+		unset($data['tgl_lapor']);
+		unset($data['tgl_peristiwa']);
 
 		if (!$this->validasi_data_keluarga($data)) return;
 		unset($data['alamat']);
@@ -797,7 +795,17 @@
 		if (!$outp) $_SESSION = -1;
 
 		$id_pend = $this->db->insert_id();
-		$this->penduduk_model->tulis_log_penduduk($id_pend, $id_detail, $blnskrg, $thnskrg);
+		
+		// Jenis peristiwa didapat dari form yang berbeda
+		// Jika peristiwa lahir akan mengambil data dari field tanggal lahir
+		$x = [
+			'tgl_peristiwa' => $tgl_peristiwa,
+			'kode_peristiwa' => $this->session->jenis_peristiwa,
+			'tgl_lapor' => $tgl_lapor,
+			'id_pend' => $id_pend,
+			'created_by' => $this->session->user
+		];
+		$this->penduduk_model->tulis_log_penduduk_data($x);
 	}
 
 	public function get_nokk($id)
@@ -996,6 +1004,7 @@
 			$nama_ibu .= $ranggota['nama_ibu']."\line ";
 			$golongan_darah .= $ranggota['golongan_darah']."\line ";
 			$tanggalperkawinan .= isset($ranggota['tanggalperkawinan']) ? tgl_indo($ranggota['tanggalperkawinan'])."\line " : "- \line ";
+			$tanggalperceraian .= isset($ranggota['tanggalperceraian']) ? tgl_indo($ranggota['tanggalperceraian'])."\line " : "- \line ";
 		}
 
 		$buffer = str_replace("[no]","$no", $buffer);
@@ -1016,6 +1025,7 @@
 		$buffer = str_replace("[ibu]","\caps $nama_ibu", $buffer);
 		$buffer = str_replace("[darah]","\caps $golongan_darah", $buffer);
 		$buffer = str_replace("[tanggalperkawinan]","\caps $tanggalperkawinan", $buffer);
+		$buffer = str_replace("[tanggalperceraian]","\caps $tanggalperceraian", $buffer);
 
 		$h = $data['desa'];
 		$k = $data['kepala_kk'];

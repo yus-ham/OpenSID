@@ -91,7 +91,17 @@ class Database_model extends CI_Model {
 		'20.08' => array('migrate' => 'migrasi_2008_ke_2009', 'nextVersion' => '20.09'),
 		'20.09' => array('migrate' => 'migrasi_2009_ke_2010', 'nextVersion' => '20.10'),
 		'20.10' => array('migrate' => 'migrasi_2010_ke_2011', 'nextVersion' => '20.11'),
-		'20.11' => array('migrate' => NULL, 'nextVersion' => NULL)
+		'20.11' => array('migrate' => 'migrasi_2011_ke_2012', 'nextVersion' => '20.12'),
+		'20.12' => array('migrate' => 'migrasi_2012_ke_2101', 'nextVersion' => '21.01'),
+		'21.01' => array('migrate' => 'migrasi_2101_ke_2102', 'nextVersion' => '21.02'),
+		'21.02' => array('migrate' => 'migrasi_2102_ke_2103', 'nextVersion' => '21.03'),
+		'21.03' => array('migrate' => 'migrasi_2103_ke_2104', 'nextVersion' => '21.04'),
+		'21.04' => array('migrate' => 'migrasi_2104_ke_2105', 'nextVersion' => '21.05'),
+		'21.05' => array('migrate' => 'migrasi_2105_ke_2106', 'nextVersion' => '21.06'),
+		'21.06' => array('migrate' => 'migrasi_2106_ke_2107', 'nextVersion' => '21.07'),
+		'21.07' => array('migrate' => 'migrasi_2107_ke_2108', 'nextVersion' => '21.08'),
+		'21.08' => array('migrate' => 'migrasi_2108_ke_2109', 'nextVersion' => '21.09'),
+		'21.09' => array('migrate' => 'migrasi_2109_ke_2110', 'nextVersion' => NULL),
 	);
 
 	public function __construct()
@@ -150,6 +160,9 @@ class Database_model extends CI_Model {
 
 	public function migrasi_db_cri()
 	{
+		// Tunggu restore selesai sebelum migrasi
+		if (isset($this->session->sedang_restore) && $this->session->sedang_restore == 1) return;
+
 	 	$_SESSION['success'] = 1;
 		$versi = $this->getCurrentVersion();
 		$nextVersion = $versi;
@@ -171,6 +184,9 @@ class Database_model extends CI_Model {
 		{
 			$this->_migrasi_db_cri();
 		}
+		// Jalankan migrasi untuk fitur premium
+		$this->jalankan_migrasi('migrasi_fitur_premium');
+
 		$this->folder_desa_model->amankan_folder_desa();
 		$this->surat_master_model->impor_surat_desa();
 		$this->db->where('id', 13)->update('setting_aplikasi', array('value' => TRUE));
@@ -179,7 +195,7 @@ class Database_model extends CI_Model {
 			'pasca-<versi>' atau '<versi>-pasca disimpan sebagai '<versi>'
 		*/
 		$versi = AmbilVersi();
-		$versi = preg_replace('/pasca-|-pasca/', '', $versi);
+		$versi = preg_replace('/pasca-|-pasca|-premium|-premium-pasca/', '', $versi);
 		$newVersion = array(
 			'value' => $versi
 		);
@@ -194,8 +210,8 @@ class Database_model extends CI_Model {
 		// Catat migrasi ini telah dilakukan
 		$sudah = $this->db->where('versi_database', VERSI_DATABASE)
 			->get('migrasi')->num_rows();
-		if (!$sudah) $this->db->insert('migrasi', array('versi_database' => VERSI_DATABASE));
-  }
+		if (! $sudah) $this->db->insert('migrasi', array('versi_database' => VERSI_DATABASE));
+	}
 
   private function getCurrentVersion()
   {
@@ -210,9 +226,13 @@ class Database_model extends CI_Model {
 		return $result;
   }
 
-  private function nop()
+  private function versi_database_terbaru()
   {
-  	// Tidak lakukan apa-apa
+		$sudah = false;
+		if ($this->db->table_exists('migrasi') )
+			$sudah = $this->db->where('versi_database', VERSI_DATABASE)
+				->get('migrasi')->num_rows();
+		return $sudah;
   }
 
 	// Cek apakah migrasi perlu dijalankan
@@ -220,11 +240,7 @@ class Database_model extends CI_Model {
 	{
 		// Paksa menjalankan migrasi kalau belum
 		// Migrasi direkam di tabel migrasi
-		$sudah = false;
-		if ($this->db->table_exists('migrasi') )
-			$sudah = $this->db->where('versi_database', VERSI_DATABASE)
-				->get('migrasi')->num_rows();
-		if ( ! $sudah)
+		if ( ! $this->versi_database_terbaru())
 		{
 			// Ulangi migrasi terakhir
 			$terakhir = key(array_slice($this->versionMigrate, -1, 1, true));
@@ -300,6 +316,7 @@ class Database_model extends CI_Model {
 		$this->jalankan_migrasi('migrasi_2008_ke_2009');
 		$this->jalankan_migrasi('migrasi_2009_ke_2010');
 		$this->jalankan_migrasi('migrasi_2010_ke_2011');
+		$this->jalankan_migrasi('migrasi_2101_ke_2102');
   }
 
   private function jalankan_migrasi($migrasi)
