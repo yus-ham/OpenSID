@@ -1,0 +1,12 @@
+name: Testing App
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Instal deps
+        run: npm install
+        run: npx playwright install
+        run: npm run test
