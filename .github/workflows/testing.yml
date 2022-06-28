@@ -12,6 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - run: php -S 0.0.0.0:8080 -t .
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
