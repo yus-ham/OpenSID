@@ -19,5 +19,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - name: Run Playwright tests
-      uses: microsoft/playwright-github-action@v1.5.1    
+    - run: npx playwright install
+    - run: npx playwright test
