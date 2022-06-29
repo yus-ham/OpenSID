@@ -13,6 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: php -S 0.0.0.0:8080 -t $GITHUB_WORKSPACE > /dev/null 2>&1 &
+    - run: curl -sL http://localhost:8080
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -20,4 +21,4 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npx playwright install
-    - run: npx playwright test
+#    - run: npx playwright test
